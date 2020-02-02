@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html class="img-no-display"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World with Socket.io</title>
+    <script src="socket.io-1.4.5.js"></script>
+    <script>
+    //screen//node test/socketserver.js//ctrl a +d//screen -r
+      var socket = io("http://fosthome.synology.me:3001");
+      //var socket = io("http://localhost:3001");
+      var i = 0;
+      socket.on("message-from-server-to-client", function(msg) {
+      i = i+1;
+          document.getElementById('message').innerHTML = msg;
+          socket.emit('message-from-client-to-server', 'Hello World!'+i);
+      });
+      
+      socket.emit('message-from-client-to-server', 'Hello World!');
+    </script>
+  </head>
+  <body>
+    <p>Socker.io Hello World client started!</p>
+    <p id="message"></p>
+  </body>
+</html>

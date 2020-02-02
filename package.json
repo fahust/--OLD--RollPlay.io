@@ -1,0 +1,48 @@
+{
+  "name": "patchwire",
+  "version": "0.2.2",
+  "description": "Multiplayer game server framework for Node.js",
+  "engines": {
+    "node": "^10.15.3",
+    "npm": "^6.4.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "nyc mocha -- --exit",
+    "test:cov": "nyc --check-coverage --statement 80 --functions 80 --branches 80 --lines 80 nyc mocha -- --exit",
+    "ci": "npm run lint && npm run test:cov"
+  },
+  "keywords": [
+    "server",
+    "socket",
+    "multiplayer",
+    "game"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/twisterghost/patchwire.git"
+  },
+  "bugs": {
+    "url": "https://github.com/twisterghost/patchwire/issues"
+  },
+  "files": [
+    "index.js",
+    "lib"
+  ],
+  "author": "Michael Barrett <twisterghost@gmail.com> (http://hellote.com/)",
+  "license": "MIT",
+  "dependencies": {
+    "jsonminify": "^0.4.1",
+    "lodash": "^4.17.15",
+    "react-scripts": "^2.1.8",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "chai": "3.5.0",
+    "eslint": "2.7.0",
+    "mocha": "^6.2.2",
+    "nyc": "^13.3.0",
+    "sinon": "1.17.3"
+  }
+}
