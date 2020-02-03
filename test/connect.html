@@ -67,15 +67,17 @@
       var i = 0;
       var nameClient = '';
       var roomClient = '';
+      var itemsClient = [];
 
 
 
       function actionPossible(type){//action que l'ont peut executer vers cet objet
       var action = [];
       if (type == 0) {//me
-          action[1] = 'use item';
+          action[1] = 'inventory';
           action[2] = 'drop item';
           action[3] = 'equip item';
+          action[3] = 'unequip all item';
           action[4] = 'describe';
           action[5] = 'show';
         }
@@ -118,27 +120,66 @@
           action[3] = 'describe';
           action[4] = 'watch';
         }
+
+        if (type == 5) {//forge
+          action[1] = 'forge';
+        }
+
+        if (type == 6) {//alchimie
+          action[1] = 'alchemy';
+        }
+
+        if (type == 7) {//Door
+          action[1] = 'go';
+        }
         return action;
       }
       function clickAction(){
         //choose action and send it
-       
         document.querySelectorAll('.actionBloc').forEach(element => {
             element.onclick = function() {
-              //action = actionPossible(obj.firstChild.dataset.type);
-              var allAction = '';
-              //console.log(element);
-              var msg = {"action":element.firstChild.innerHTML, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.name, "byItems":'', "toItems":''};
-              //console.log(msg);
-              //console.log(msg);
-              if (obj.innerHTML == 'use item' ){ 
-                items();
+              if (element.firstChild.innerHTML == 'inventory' ){//liste des items du joueur
+                $( ".action" ).empty();
+                itemsClient.forEach(item => {
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span></div></div>');
+                });
+                clickAction()
+              }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' ){//listes des items a trade
+                  nameItem = element.firstChild.innerHTML;
+                  toItem = element.firstChild.dataset.name;
+                $( ".action" ).empty();
+                itemsClient.forEach(item => {
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span></div></div>');
+                });
+                clickAction()
+              }else{
+                if (element.firstChild.dataset.inventory){//liste d'action avec items du joueur
+                  nameItem = element.firstChild.innerHTML;
+                  toItem = element.firstChild.dataset.to;
+                  $( ".action" ).empty();
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span></div></div>');
+                  clickAction()
+                }else if (element.firstChild.dataset.action){//envoi trade et give
+                  var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.to, "byItems":element.firstChild.dataset.item, "toItems":''};
+                  if(msg != [])
+                    socket.emit('action', JSON.stringify(msg));
+                  clickAction()
+                }else if (element.firstChild.innerHTML == 'forge'){//envoyé forge
+                  var msg = {"action":element.firstChild.innerHTML, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.name, "byItems":element.firstChild.dataset.item, "toItems":'',"msgCreateItem": [
+                  { "name":$( "#recipient-item-name" )},{ "hp":$( "#recipient-item-hp" )},{ "force":$( "#recipient-item-force" )},{ "dext":$( "#recipient-item-dext" )},{ "chance":$( "#recipient-item-chance" )},{ "charme":$( "#recipient-item-charme" )},{ "time":$( "#recipient-item-time" )},{ "type":1}
+                ]};
+                  if(msg != [])
+                    socket.emit('action', JSON.stringify(msg));
+                }else{//envoi des autres actions
+                  var allAction = '';
+                  var msg = {"action":element.firstChild.innerHTML, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.name, "byItems":element.firstChild.dataset.item, "toItems":''};
+                  if(msg != [])
+                    socket.emit('action', JSON.stringify(msg));
+                }
               }
-              if(msg != [])
-                socket.emit('action', JSON.stringify(msg));
             }
           })
-          //clickAction();
       }
       function clickObj(){
         //choose obj and get action of
@@ -181,24 +222,37 @@
       socket.on("action", function(msg) {
         msg.action
       });
-      socket.on("allObj", function(msg) {//console.log(msg);
+      socket.on("allObj", function(msg) {console.log(msg);
         var allObj = '';
         $( ".obj" ).empty();
         msg.forEach(element => {
           if (element.name == nameClient){
             roomClient = element.room;
             element.type = 0;
+            itemsClient = element.items;
           }
-          $( ".obj" ).append( '<div class="chatContainer objBloc" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right">11:00</span></div></div>' );
+          color = '#625550';
+          if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
+          $( ".obj" ).append( '<div class="chatContainer objBloc" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right">11:00</span></div></div>' );
         });
         clickObj();
+          var wtf    = $('.chat');
+          var height = wtf[0].scrollHeight;
+          wtf.scrollTop(height);
       });
       socket.on("oneObj", function(msg) {
         document.querySelector('#'+msg.id).innerhtml = '<div class="chatContainer objBloc"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right">11:00</span></div></div>';
+        clickObj();
+          var wtf    = $('.chat');
+          var height = wtf[0].scrollHeight;
+          wtf.scrollTop(height);
       });
 
       socket.on("message", function(msg) {
         $( ".chat" ).append( '<div class="chatContainer"><span id="obj" data-type="'+'">'+msg+'</span><span class="time-right">11:00</span></div></div>' );
+          var wtf    = $('.chat');
+          var height = wtf[0].scrollHeight;
+          wtf.scrollTop(height);
         //console.log(document.querySelector('.chat').innerhtml);
       });
 
@@ -214,21 +268,16 @@
           //console.log(JSON.stringify(msg));
         };
 
-
-        
-
         //send message at all rooms
         document.addEventListener('keydown', function(e) {
           if (e.keyCode == 13) {
               var msg = document.querySelector(".message-field").value;
               socket.emit('message', msg);
+              $('.message-field').val('');
           }
         })
         
-
-        
       }
-      //socket.emit('message-from-client-to-server', 'Hello World!');
     </script>
   </head>
   <body>
@@ -264,6 +313,42 @@
         </div>
       </div>
     </div>
+
+    <!--Forge/alchemy-->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#forgeModal" data-whatever="@mdo">Forge</button>
+
+    <div class="modal fade" id="forgeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Forge Item</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="connect" class="col-form-label connect-name">Name Item :</label>
+                <input type="text" class="form-control" id="recipient-item-name">
+              </div>
+              <div class="form-group">
+                <label for="connect" class="col-form-label connect-password">Strong :</label>
+                <input type="text" class="form-control" id="recipient-item-force">
+              </div>
+              <div class="form-group">
+                <label for="connect" class="col-form-label connect-password">Dexterity :</label>
+                <input type="text" class="form-control" id="recipient-item-dext">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-connect btn-primary">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
     
 
       <!--chat-->
@@ -272,12 +357,6 @@
           <div class="chat" style="height: 95vh;overflow:auto;border:2px solid black;padding:5px;">
             
 
-            <div class="chatContainer">
-              <img src="/w3images/bandmember.jpg" alt="Avatar">
-              <p>Hello. How are you today?</p>
-              <span class="time-right">11:00</span>
-            </div>
-
             <p id="message"></p>
           </div>
           <input type="text" placeholder="message" class="message-field form-control" aria-label="Username" aria-describedby="basic-addon1" >
@@ -285,18 +364,10 @@
         <div class="col-3">
           <div class="row">
             <div class="col-12 obj" style="height: 50vh;overflow:auto;border:2px solid black;padding:5px;">
-              <div class="chatContainer objBloc">
-                <img src="/w3images/bandmember.jpg" alt="Avatar">
-                <p>object</p>
-                <span class="time-right">11:00</span>
-              </div>
+            
             </div>
             <div class="col-12 action" style="height: 50vh;overflow:auto;border:2px solid black;padding:5px;">
-              <div class="chatContainer actionBloc">
-                <img src="/w3images/bandmember.jpg" alt="Avatar">
-                <p>action</p>
-                <span class="time-right">11:00</span>
-              </div>
+            
             </div>
           </div>
         </div>

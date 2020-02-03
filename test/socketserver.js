@@ -22,14 +22,22 @@ fs.readFile('student.json', (err, data) => {
 
 
 fs.readFile('name.json', (err, data) => {
-    if (err) throw err;
-    var student = JSON.parse(data);
-    student.forEach(name => {
-        AllRoomLoaded.addNammeAtLoad(name.name);
-    });
-    AllRoomLoaded.createNewRoomDev(5,4,2,5,0,1,'port');
-    AllRoomLoaded.createNewRoomDev(5,4,2,5,0,1,'auberge');
-  }); 
+  if (err) throw err;
+  var student = JSON.parse(data);
+  student.forEach(name => {
+    AllRoomLoaded.addNammeAtLoad(name.name);
+  });
+  var arrayDoor = [];
+  arrayDoor.push('auberge');
+  AllRoomLoaded.createNewRoomDev(5,4,2,5,1,1,0,'port',arrayDoor);
+  arrayDoor = [];
+  arrayDoor.push('port');
+  arrayDoor.push('route des aventuriers');
+  AllRoomLoaded.createNewRoomDev(5,4,2,5,1,1,0,'auberge',arrayDoor);
+  arrayDoor.push('port');
+  arrayDoor.push('route');
+  AllRoomLoaded.createNewRoomDev(5,4,2,5,1,1,0,'route des aventuriers',arrayDoor);
+}); 
 
 //setTimeout(() => {
 //}, 1000);
@@ -70,7 +78,7 @@ io.on('connection', (socket) => {console.log('client');
   });
   socket.on('message', (msg) => {
     if (socket.user)
-      AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' say '+msg)
+      AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' say '+msg);
       
       //socket.emit('message-from-server-to-client', msg);
   });
@@ -79,8 +87,8 @@ io.on('connection', (socket) => {console.log('client');
     socket.user = user;
       //socket.emit('message', 'message');
       //socket.emit('message-from-server-to-client', msg);
-    AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected')
-    AllRoomLoaded.sendAllClientRoom(socket.user.room)
+    AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
+    AllRoomLoaded.sendAllClientRoom(socket.user.room);
   });
     
       

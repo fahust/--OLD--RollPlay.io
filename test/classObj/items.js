@@ -43,7 +43,7 @@ class Items{
   savedItems(){
     var exist = false;
     this.AllRooms.savedItems.forEach(element => {
-      if (element.name == this.name && element.hp == this.hp && element.force == this.force && element.dext == this.dext && element.chance == this.chance && element.charme == this.charme && element.time == this.time && element.type == this.type){
+      if (element.name == this.name /*&& element.hp == this.hp && element.force == this.force && element.dext == this.dext && element.chance == this.chance && element.charme == this.charme && element.time == this.time && element.type == this.type*/){
         exist = true;
       }
     });

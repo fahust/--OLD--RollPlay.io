@@ -55,7 +55,7 @@ class AllRoom{
     this.savedNamePnjs.push(name);//onsole.log(this.savedNamePnjs[0])
   }
   getNammeAtLoad(){//console.log(this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)]);
-    this.lastName = this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)]
+    this.lastName = this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)];
     return this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)];
   }
   /** prepare for save all server in json in file */
@@ -67,6 +67,9 @@ class AllRoom{
       element.object.forEach(obj => {//mise en cache des obj de la room
         obj.AllRooms = [];//supression des obj pour le send
         obj.socket = [];//supression des socket
+        obj.itemEquip1 = {};//supression des socket
+        obj.itemEquip2 = {};//supression des socket
+        obj.itemEquip3 = {};//supression des socket
         obj.items.forEach(item => {
           item.AllRooms = [];
         });
@@ -88,7 +91,7 @@ class AllRoom{
       }
     });
     /** register */
-    var tempUser = new Obj(this,1,10,10,1,1,1,1,1,1,1,1,0,1,msg.name,Date.now(),'port',msg.password,0);
+    var tempUser = new Obj(this,1,10,10,3,3,3,3,3,3,3,3,0,1,msg.name,Date.now(),'port',msg.password,0);
     tempUser.socket = socket;
     this.users.push(tempUser);
     this.roomArray[0].object.push(tempUser);
@@ -100,11 +103,11 @@ class AllRoom{
     this.roomArray.forEach(element => {
       if(element.name == room && entierAleatoire(1,10) == 5){
         if(element.danger > 0){
-          var tempObj = new Obj(this,3,entierAleatoire(10,10*element.danger),entierAleatoire(10,10*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),0,entierAleatoire(1,1*element.danger),'monster',Date.now(),'',element.name);
+          var tempObj = new Obj(this,3,entierAleatoire(10,10*element.danger),entierAleatoire(10,10*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),0,entierAleatoire(1,1*element.danger),this.getNammeAtLoad(),Date.now(),room,element.name);
           element.object.push(tempObj);
         }else{
           this.generateStats();
-          var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,'test',Date.now());
+          var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room);
           element.object.push(tempObj);
         }
       }
@@ -112,7 +115,7 @@ class AllRoom{
   }
   /** reception message of user and launch action*/
   action(msg,user){
-    //this.createMonsterOrPnj(msg.room);
+    this.createMonsterOrPnj(msg.room);
     var action = new Action(this,msg,user);
     action.AllRooms = this;
   }
@@ -136,20 +139,24 @@ class AllRoom{
       this.savedNamePnjs.push(name);
   }*/
   /** create a new room for development */
-  createNewRoomDev(nbrItems,type2,type3,type4,type5,danger,name){//console.log(name);
+  createNewRoomDev(nbrItems,type2,type3,type4,type5,type6,danger,name,arrayDoor){//console.log(name);
     var varRoom = new OneRoom(danger,name);
     var type = 0;
-    for (let i = 0; i < 5; i++) {
-      if (i == 1){type = type2;}else if (i == 2){type = type3;}else if (i == 3){type = type4;}else if (i == 4){type = type5;}
+    for (let i = 1; i <= 6; i++) {
+      if (i == 1){type = type2;}else if (i == 2){type = type3;}else if (i == 3){type = type4;}else if (i == 4){type = type5;}else if (i == 6){type = type6;}
       for (let i2 = 0; i2 < type; i2++) {
         this.generateStats(i);
-        var obj = new Obj(this,3,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),'port');
+        var obj = new Obj(this,i,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),'port');
         for (let i = 0; i < nbrItems; i++) 
-          obj.addItems(new Items(this,'Potion de lune',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),obj.id));
+          obj.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),obj.id));
         //varRoom[obj.name]=obj;
         varRoom.object.push(obj);
       }
-    }//console.log(varRoom)
+    }
+    for (let i3 = 0; i3 < arrayDoor.length; i3++) {
+      var obj = new Obj(this,7,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,arrayDoor[i3],Date.now(),'port');//DOOR
+      varRoom.object.push(obj);
+    }
     this.roomArray.push(varRoom);
   }
   /** generate stats for create obj */
@@ -162,8 +169,6 @@ class AllRoom{
     this.level = entierAleatoire(1,5);
   }
 
-  
-
   actualizeObj(obj){
     if(obj.dateLastConso != 0){
       if(Date.now()-obj.dateLastConso > obj.timeConso){
@@ -175,11 +180,11 @@ class AllRoom{
         obj.dateLastConso = 0;
       }
     }
-    //obj.monsterAttack();
+    obj.monsterAttack();
   }
 
   deleteStatsUselessForSend(varObj){
-    varObj.id = [];
+    /*varObj.id = [];
     varObj.password = [];
     varObj.agressivity = [];
 
@@ -209,41 +214,85 @@ class AllRoom{
 
     varObj.AllRooms = [];//supression des obj pour le send
     varObj.socket = [];//supression des socket
+    
+    */
+    delete varObj.id;
+    delete varObj.password;
+    delete varObj.agressivity;
+
+    delete varObj.hp;
+    delete varObj.hpmax;
+    delete varObj.force;
+    delete varObj.forcemax;
+    delete varObj.dext;
+    delete varObj.dextmax;
+    delete varObj.chance;
+    delete varObj.chancemax;
+    delete varObj.charme;
+    delete varObj.charmemax;
+    delete varObj.reputation;
+            
+    delete varObj.level;
+            
+    delete varObj.timeaction;
+
+    delete varObj.action ;
+    delete varObj.nbrItems ;//persistant
+    delete varObj.idcrea;
+    //varObj.room;
+    delete varObj.description;
+    delete varObj.cible;
+    
+
+    delete varObj.AllRooms//supression des obj pour le send
+    delete varObj.socket;//supression des socket
     return varObj;
   }
   /** send all client at all client of room where is client's action launch */
   sendAllClientRoom(roomName){// envoyer les info d'une room a tout les clients de cet room
-  this.roomArray.forEach(element => {
-    if (element.name == roomName){//console.log(roomName);
-        
+    this.roomArray.forEach(element => {
+      if (element.name == roomName){//console.log(element.name,roomName);
         var objToSend = [];
         element.object.forEach(obj => {//console.log(obj);
-            this.actualizeObj(obj);
-            if (obj.type == 1 && obj.socket.connected == false){}else{
+          this.actualizeObj(obj);
+          if (obj.type == 1 && obj.socket.connected == false){}else{
             var varObj = Object.assign(new Obj(this),obj);//console.log(varObj.name);
             if (obj.type == 1 || obj.type == 0){
-                varObj.items.forEach(item => {
+              varObj.items.forEach(item => {
                 item.AllRooms = [];
                 item.owner = [];
-                });
+              });
+              if(varObj.itemEquip1){
+                varObj.itemEquip1.AllRooms = [];
+                varObj.itemEquip1.owner = [];
+              }
+              if(varObj.itemEquip1){
+                varObj.itemEquip2.AllRooms = [];
+                varObj.itemEquip2.owner = [];
+              }
+              if(varObj.itemEquip1){
+                varObj.itemEquip3.AllRooms = [];
+                varObj.itemEquip3.owner = [];
+              }
             }else{
-                varObj.itemEquip1 = [];
-                varObj.itemEquip2 = [];
-                varObj.itemEquip3 = [];
-                varObj.items = [];
+              varObj.itemEquip1 = [];
+              varObj.itemEquip2 = [];
+              varObj.itemEquip3 = [];
+              varObj.items = [];
             }
+            //console.log(varObj.name);
             varObj = this.deleteStatsUselessForSend(varObj);
             objToSend.push(varObj);
-            }
-    });
-
-      element.object.forEach(client => {
-          if(client.type == 1 && client.socket.connected == true){
-          client.socket.emit('allObj', objToSend);
           }
-      });
-  }
-  });
+        });
+        //console.log(objToSend);
+        element.object.forEach(client => {
+          if(client.type == 1 && client.socket.connected == true){
+            client.socket.emit('allObj', objToSend);
+          }
+        });
+      }
+    });
     /*this.roomArray.forEach(element => {
       if (element.name == roomName){var roomNow = element;
         element.object.forEach(client => {
@@ -353,12 +402,12 @@ class AllRoom{
       }
     });
     if(!tmpItems[0]){
-        this.savedItems.forEach(element => {
-              tmpItems.push(Object.assign(new Items(this),element));
-          });
+      this.savedItems.forEach(element => {
+        tmpItems.push(Object.assign(new Items(this),element));
+      });
     }
     var tmpNbrItems = entierAleatoire(0,tmpItems.length);
-    var item = tmpItems[tmpNbrItems]
+    var item = tmpItems[tmpNbrItems];
     item.AllRooms = this;
     return item;
   }

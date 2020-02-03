@@ -8,9 +8,12 @@ class Skill{
       this.chance = chance;
       this.charme = charme;
       this.time = time;
-      this.type = type;//1 = consomable,2 = constant
+      //this.type = type;//1 = consomable,2 = constant
       this.owner = owner;
-      this.level = this.getLevelItems();
-      this.savedItems();
-      this.AllRooms.addNameItems(name);
+      //this.level = this.getLevelItems();
+      this.savedSkill();
+      this.AllRooms.addNameSkill(name);
     }
+
+    
+  }

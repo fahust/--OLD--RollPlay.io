@@ -47,10 +47,10 @@ class Obj{
     this.room = room;
     this.description;
     this.cible;
-    this.itemEquip1 = {};
-    this.itemEquip2 = {};
-    this.itemEquip3 = {};
-    this.itemEquip1.dext = 1;
+    this.itemEquip1;
+    this.itemEquip2;
+    this.itemEquip3;
+    /*this.itemEquip1.dext = 1;
     this.itemEquip1.force = 1;
     this.itemEquip1.chance = 1;
     this.itemEquip1.charme = 1;
@@ -61,23 +61,23 @@ class Obj{
     this.itemEquip3.dext = 1;
     this.itemEquip3.force = 1;
     this.itemEquip3.chance = 1;
-    this.itemEquip3.charme = 1;
+    this.itemEquip3.charme = 1;*/
     this.monsterAttack();
   }
 
   monsterAttack(){//console.log('test');
-    const varRooms = this.AllRooms;
+    var varRooms = this.AllRooms;
     if (this.type == 3 && Date.now()-this.dateLastAttack > this.timeaction){//eventuellement créer des gardes qui attaquerais les monstres
       var cachedCible = [];
-        //console.log(this.AllRooms);
-      varRooms.roomArray.foreach(function (room, i) {console.log(cachedCible);
-        if (this.room == room.name){
-          room.foreach(function (obj, i2) {
-            if(obj.type == 1)
-              cachedCible.push(obj);
-          });
+      //console.log(varRooms);
+      for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {//varRooms.roomArray.foreach(function (room, i) {//console.log(cachedCible);
+        if(this.room == varRooms.roomArray[i]){//if (this.room == room.name){
+          for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {//room.foreach(function (obj, i2) {
+            if(varRooms.roomArray[i].object[i2].type == 1)
+              cachedCible.push(varRooms.roomArray[i].object[i2]);
+          }//);
         }
-      });
+      }//);
       var cible = cachedCible[entierAleatoire(0,cachedCible.length)];
       var action = [];
       this.dateLastAttack = Date.now();
@@ -87,7 +87,7 @@ class Obj{
       action.byItems = [];
       action.toItems = [];
       action.room = this.room;//name room
-      var actionEvent = new Action(this.AllRooms,action);
+      //var actionEvent = new Action(this.AllRooms,action);
     }
   }
 
@@ -142,22 +142,27 @@ class Obj{
   }
 
   goToRoom(room,user){//console.log(this.AllRooms.roomArray);
+    //var cachedUser;
     for (var i = 0, len = this.AllRooms.roomArray.length; i < len; i++) {//this.AllRooms.roomArray.foreach(function (room, i) {
-      if (this.room ==  this.AllRooms.roomArray[i].name){
-        this.AllRooms.roomArray[i].foreach(function (obj, i2) {
-          if(obj == this.to)
+      if (this.room == this.AllRooms.roomArray[i].name){
+        for (var i2 = 0, len2 = this.AllRooms.roomArray[i].object.length; i2 < len2; i2++) {//this.AllRooms.roomArray[i].foreach(function (obj, i2) {
+          //console.log(this.AllRooms.roomArray[i].object[i2].name, user.name);
+          if(this.AllRooms.roomArray[i].object[i2].name == user.name){
+            //cachedUser = Object.assign(new Obj(this),this.AllRooms.roomArray[i].object[i2]);
             delete this.AllRooms.roomArray[i].object[i2];
-        });
+          }
+        }//);
       }
-    };//);
+    }//);
     var cachedRoom = user.room;
-    user.room = room;
+    user.room = room.name;
+    //console.log('gotoroom',cachedRoom,room.name)
     this.AllRooms.sendAllClientRoom(cachedRoom);
-    for (var i = 0, len = this.AllRooms.roomArray.length; i < len; i++) {//this.AllRooms.roomArray.foreach(function (room, i) {
-      if(room.name == this.AllRooms.roomArray[i].name)
-        this.AllRooms.push(this);
-    };//);
-    this.AllRooms.sendAllClientRoom(this.AllRooms.roomArray[i].name);
+    for (var i3 = 0, len3 = this.AllRooms.roomArray.length; i3 < len3; i3++) {//this.AllRooms.roomArray.foreach(function (room, i) {
+      if(room.name == this.AllRooms.roomArray[i3].name)
+        this.AllRooms.roomArray[i3].object.push(this);
+    }//);
+    this.AllRooms.sendAllClientRoom(room.name);
   }
 
   die(){
