@@ -222,7 +222,7 @@
       socket.on("action", function(msg) {
         msg.action
       });
-      socket.on("allObj", function(msg) {console.log(msg);
+      socket.on("allObj", function(msg) {//console.log(msg);
         var allObj = '';
         $( ".obj" ).empty();
         msg.forEach(element => {

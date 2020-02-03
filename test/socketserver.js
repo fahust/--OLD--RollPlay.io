@@ -4,7 +4,7 @@ const server = app.listen(3001,console.log('Socket.io Hello Wolrd server started
 const io = require('socket.io')(server);
 const fs = require('fs');
 require('jsonminify');
-
+//screen//node test/socketserver.js//ctrl a +d//screen -r
 
 
 var AllRoom = require('./classObj/rooms.js'); 

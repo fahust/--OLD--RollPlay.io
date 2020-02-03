@@ -147,9 +147,11 @@ class Obj{
       if (this.room == this.AllRooms.roomArray[i].name){
         for (var i2 = 0, len2 = this.AllRooms.roomArray[i].object.length; i2 < len2; i2++) {//this.AllRooms.roomArray[i].foreach(function (obj, i2) {
           //console.log(this.AllRooms.roomArray[i].object[i2].name, user.name);
-          if(this.AllRooms.roomArray[i].object[i2].name == user.name){
-            //cachedUser = Object.assign(new Obj(this),this.AllRooms.roomArray[i].object[i2]);
-            delete this.AllRooms.roomArray[i].object[i2];
+          if(this.AllRooms.roomArray[i].object[i2]){
+            if(this.AllRooms.roomArray[i].object[i2].name == user.name){
+              //cachedUser = Object.assign(new Obj(this),this.AllRooms.roomArray[i].object[i2]);
+              delete this.AllRooms.roomArray[i].object[i2];
+            }
           }
         }//);
       }
