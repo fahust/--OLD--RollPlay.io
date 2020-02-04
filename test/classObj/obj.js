@@ -50,18 +50,6 @@ class Obj{
     this.itemEquip1;
     this.itemEquip2;
     this.itemEquip3;
-    /*this.itemEquip1.dext = 1;
-    this.itemEquip1.force = 1;
-    this.itemEquip1.chance = 1;
-    this.itemEquip1.charme = 1;
-    this.itemEquip2.dext = 1;
-    this.itemEquip2.force = 1;
-    this.itemEquip2.chance = 1;
-    this.itemEquip2.charme = 1;
-    this.itemEquip3.dext = 1;
-    this.itemEquip3.force = 1;
-    this.itemEquip3.chance = 1;
-    this.itemEquip3.charme = 1;*/
     this.monsterAttack();
   }
 
@@ -174,7 +162,7 @@ class Obj{
     this.chance = this.chancemax;
     this.charme = this.charmemax;
     //var roomDead = this.room;
-    this.goToRoom(this.AllRooms.roomArray[0],this);
+    this.goToRoom(this.AllRooms.roomArray[0].name,this);
     //this.AllRooms.sendAllClientRoom(roomDead);
   }
 

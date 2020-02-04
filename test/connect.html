@@ -68,6 +68,7 @@
       var nameClient = '';
       var roomClient = '';
       var itemsClient = [];
+      var objInRoom = [];
 
 
 
@@ -135,13 +136,16 @@
         return action;
       }
       function clickAction(){
+        document.querySelectorAll('.spinner-border').forEach(spinner => {
+          spinner.style.display = "none";
+        })
         //choose action and send it
         document.querySelectorAll('.actionBloc').forEach(element => {
             element.onclick = function() {
               if (element.firstChild.innerHTML == 'inventory' ){//liste des items du joueur
                 $( ".action" ).empty();
                 itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
                 });
                 clickAction()
               }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' ){//listes des items a trade
@@ -149,7 +153,7 @@
                   toItem = element.firstChild.dataset.name;
                 $( ".action" ).empty();
                 itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
                 });
                 clickAction()
               }else{
@@ -157,25 +161,42 @@
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.to;
                   $( ".action" ).empty();
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span></div></div>');
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
                   clickAction()
                 }else if (element.firstChild.dataset.action){//envoi trade et give
                   var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.to, "byItems":element.firstChild.dataset.item, "toItems":''};
                   if(msg != [])
                     socket.emit('action', JSON.stringify(msg));
-                  clickAction()
+                  document.querySelectorAll('.spinner-border').forEach(spinner => {
+                    spinner.style.display = "block";
+                  })
+                  setTimeout(() => {
+                    clickAction();
+                  }, 3000);
                 }else if (element.firstChild.innerHTML == 'forge'){//envoyé forge
                   var msg = {"action":element.firstChild.innerHTML, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.name, "byItems":element.firstChild.dataset.item, "toItems":'',"msgCreateItem": [
                   { "name":$( "#recipient-item-name" )},{ "hp":$( "#recipient-item-hp" )},{ "force":$( "#recipient-item-force" )},{ "dext":$( "#recipient-item-dext" )},{ "chance":$( "#recipient-item-chance" )},{ "charme":$( "#recipient-item-charme" )},{ "time":$( "#recipient-item-time" )},{ "type":1}
                 ]};
                   if(msg != [])
                     socket.emit('action', JSON.stringify(msg));
+                  document.querySelectorAll('.spinner-border').forEach(spinner => {
+                    spinner.style.display = "block";
+                  })
+                  setTimeout(() => {
+                    clickAction();
+                  }, 3000);
                 }else{//envoi des autres actions
                   var allAction = '';
                   var msg = {"action":element.firstChild.innerHTML, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.name, "byItems":element.firstChild.dataset.item, "toItems":''};
                   if(msg != [])
                     socket.emit('action', JSON.stringify(msg));
+                  document.querySelectorAll('.spinner-border').forEach(spinner => {
+                    spinner.style.display = "block";
+                  })
+                  setTimeout(() => {
+                    clickAction();
+                  }, 3000);
                 }
               }
             }
@@ -190,7 +211,23 @@
             //console.log(obj.firstChild.dataset.name);
             $( ".action" ).empty();
               action.forEach(element => {
-                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span></div></div>');
+                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+              });
+              clickAction();
+            }
+          });
+      }
+
+      function clickObjDial(){
+        //choose obj and get action of
+        document.querySelectorAll('#objdial').forEach(obj => {
+            obj.onclick = function() {
+            action = actionPossible(obj.dataset.type);
+            var allAction = '';
+            //console.log(obj.firstChild.dataset.name);
+            $( ".action" ).empty();
+              action.forEach(element => {
+                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
               });
               clickAction();
             }
@@ -226,6 +263,7 @@
         var allObj = '';
         $( ".obj" ).empty();
         msg.forEach(element => {
+          objInRoom.push(element);
           if (element.name == nameClient){
             roomClient = element.room;
             element.type = 0;
@@ -233,23 +271,25 @@
           }
           color = '#625550';
           if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
-          $( ".obj" ).append( '<div class="chatContainer objBloc" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right">11:00</span></div></div>' );
+          $( ".obj" ).append( '<div class="chatContainer objBloc" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"></span></div></div>' );
         });
         clickObj();
-          var wtf    = $('.chat');
-          var height = wtf[0].scrollHeight;
-          wtf.scrollTop(height);
       });
       socket.on("oneObj", function(msg) {
-        document.querySelector('#'+msg.id).innerhtml = '<div class="chatContainer objBloc"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right">11:00</span></div></div>';
+        document.querySelector('#'+msg.id).innerhtml = '<div class="chatContainer objBloc"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"></span></div></div>';
         clickObj();
-          var wtf    = $('.chat');
-          var height = wtf[0].scrollHeight;
-          wtf.scrollTop(height);
       });
 
       socket.on("message", function(msg) {
-        $( ".chat" ).append( '<div class="chatContainer"><span id="obj" data-type="'+'">'+msg+'</span><span class="time-right">11:00</span></div></div>' );
+        objInRoom.forEach(element => {
+          if(msg.contains(element.name)){
+            color = '#625550';
+          if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
+            var res = msg.replace(element.name,'<span id="objdial" style="color:'+color+'" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span>');
+          }
+        });
+        $( ".chat" ).append( '<div class="chatContainer"><span id="obj" data-type="'+'">'+msg+'</span><span class="time-right"></span></div></div>' );
+          clickObjDial();
           var wtf    = $('.chat');
           var height = wtf[0].scrollHeight;
           wtf.scrollTop(height);

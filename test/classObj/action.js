@@ -347,6 +347,10 @@ class Action{
     }
   }
 
+  talk(){
+    //réponse du pnj depuis dialogue.js aleatory
+  }
+
   /*createSkill(){
     if (!this.AllRooms.savedNameItems.includes(this.itemName)){
       new Skill(this.AllRooms,this.itemName,this.itemHp,this.itemForce,this.itemDext,this.itemChance,this.itemCharme,this.itemTime,this.itemType,this.by);

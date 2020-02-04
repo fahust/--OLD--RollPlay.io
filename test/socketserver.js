@@ -37,15 +37,21 @@ fs.readFile('name.json', (err, data) => {
     AllRoomLoaded.addNammeAtLoad(name.name);
   });
   var arrayDoor = [];
-  arrayDoor.push('auberge');
-  AllRoomLoaded.createNewRoomDev(5,4,2,5,1,1,0,'port',arrayDoor);
+  arrayDoor.push('tavern');
+  arrayDoor.push('adventurer\'s road');
+  AllRoomLoaded.createNewRoomDev(5,0,2,5,1,1,0,'port',arrayDoor);
   arrayDoor = [];
   arrayDoor.push('port');
-  arrayDoor.push('route des aventuriers');
-  AllRoomLoaded.createNewRoomDev(5,4,2,5,1,1,0,'auberge',arrayDoor);
+  AllRoomLoaded.createNewRoomDev(5,0,2,5,1,1,0,'tavern',arrayDoor);
   arrayDoor.push('port');
-  arrayDoor.push('route');
-  AllRoomLoaded.createNewRoomDev(5,4,2,5,1,1,0,'route des aventuriers',arrayDoor);
+  arrayDoor.push('adventurer\'s cemetery');
+  arrayDoor.push('adventurer\'s mountain');
+  AllRoomLoaded.createNewRoomDev(2,4,1,0,1,1,2,'adventurer\'s road',arrayDoor);
+  arrayDoor.push('adventurer\'s road');
+  AllRoomLoaded.createNewRoomDev(2,6,1,1,1,1,3,'adventurer\'s cemetery',arrayDoor);
+  arrayDoor.push('adventurer\'s road');
+  arrayDoor.push('adventurer\'s waterfall');
+  AllRoomLoaded.createNewRoomDev(0,4,1,1,1,1,3,'adventurer\'s mountain',arrayDoor);
 }); 
 
 //setTimeout(() => {
