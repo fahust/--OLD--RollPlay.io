@@ -373,6 +373,11 @@ class Action{
       this.to.charme += this.byItems.charme;
       this.to.timeConso += this.time;
       this.to.dateLastConso = Date.now();
+      this.by.items.forEach(item => {
+        if(item.hp == this.byItems.hp && item.force == this.byItems.force && item.dext == this.byItems.dext && item.chance == this.byItems.chance && item.charme == this.byItems.charme )
+        console.log(item)
+          //delete item;
+      });
       this.AllRooms.sendOneClientRoom(this.room,this.by);
     }
   }
