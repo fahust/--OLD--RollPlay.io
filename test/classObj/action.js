@@ -157,7 +157,7 @@ class Action{
       this.by.items.push(toItems);
       delete this.by.items[this.byItems];
       this.AllRooms.sendRoom(this.by.room);
-      this.AllRooms.sendOneClientInfoRoom(this.room,'Vous avez échanger '+this.byItems+' à '+this.to.name+' en échange de '+toItems,this.by);
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have traded '+this.byItems+' to '+this.to.name+' in return for '+toItems,this.by);
       this.AllRooms.sendAllClientRoom(this.room);
     }
   }
@@ -169,9 +169,9 @@ class Action{
     this.to.items.push(this.byItems);
     delete this.by.items[this.byItems];
     this.by.nbrItems -= 1;
-    this.AllRooms.sendOneClientInfoRoom(this.room,'Vous avez donnez '+this.byItems+' à '+this.to.name,this.by);
+    this.AllRooms.sendOneClientInfoRoom(this.room,'You have gived '+this.byItems+' to '+this.to.name,this.by);
     if(this.to.type == 1)
-      this.AllRooms.sendOneClientInfoRoom(this.room,'Vous avez reçu '+this.toItems+' de '+this.to.name,this.to);
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have received '+this.toItems+' by '+this.to.name,this.to);
     //penser a retirer l'objet côter client
   }
   byItemEquipedStats(){
@@ -250,19 +250,19 @@ class Action{
               }
             }
           }
-          this.AllRooms.sendOneClientInfoRoom(this.room,'Réussite de l\'attaque, vous enlevé '+this.by.force+' à '+nameCible+' et votre cible a était vaincu',this.by);
+          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+' at '+nameCible+' and your target was defeated',this.by);
           this.AllRooms.sendAllClientRoom(this.room);
-          this.AllRooms.sendAllClientInfoRoom(this.room,this.by+' à éliminer '+nameCible);
+          this.AllRooms.sendAllClientInfoRoom(this.room,this.by+' has eliminated '+nameCible);
         }else{
           if(this.to.type == 1){
-            this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' vous attaque et vous enlève '+this.by.force,this.to);
+            this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attacks you and subtracts you '+this.by.force,this.to);
           }
-          this.AllRooms.sendOneClientInfoRoom(this.room,'Réussite de l\'attaque, vous enlevé '+this.by.force+' à '+this.to.name,this.by) ;
+          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+' at '+this.to.name,this.by) ;
         }
       }else{
-        this.AllRooms.sendOneClientInfoRoom(this.room,'echec de l\'attaque',this.by);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'The attack failed.',this.by);
         if(this.to.type == 1){
-          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' vous attaque, mais vous esquivez ',this.by);
+          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attack you, but you dodge ',this.by);
         }
       }
     }else{
@@ -306,19 +306,19 @@ class Action{
               }
             }
           }
-          this.AllRooms.sendOneClientInfoRoom(this.room,'Réussite de la compétence, votre cible a était vaincu',this.by);
+          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful completion of the attack, your target was defeated',this.by);
           this.AllRooms.sendAllClientRoom(this.room);
-          this.AllRooms.sendAllClientInfoRoom(this.room,this.by+' à éliminer '+nameCible);
+          this.AllRooms.sendAllClientInfoRoom(this.room,this.by+' has eliminated '+nameCible);
         }else{
           if(this.to.type == 1){
-            this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' vous attaque et vos statistiques ont était modifié : Points de vies {'+this.to.hp+' / '+this.to.hpmax+'} , force {'+this.to.hp+' / '+this.to.hpmax+'} , force {'+this.to.force+' / '+this.to.forcemax+'} , charme {'+this.to.charme+' / '+this.to.charmemax+'} , chance {'+this.to.chance+' / '+this.to.chancemax+'}',this.to);
+            this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attacked you and your stats were altered : Life points {'+this.to.hp+' / '+this.to.hpmax+'} , dexterity {'+this.to.dext+' / '+this.to.dextmax+'} , strength {'+this.to.force+' / '+this.to.forcemax+'} , charm {'+this.to.charme+' / '+this.to.charmemax+'} , lucky {'+this.to.chance+' / '+this.to.chancemax+'}',this.to);
           }
-          this.AllRooms.sendOneClientInfoRoom(this.room,'Réussite de l\'attaque, les statistiques de '+this.to.name+' ont était modifié : Points de vies {'+this.to.hp+' / '+this.to.hpmax+'} , force {'+this.to.hp+' / '+this.to.hpmax+'} , force {'+this.to.force+' / '+this.to.forcemax+'} , charme {'+this.to.charme+' / '+this.to.charmemax+'} , chance {'+this.to.chance+' / '+this.to.chancemax+'}',this.by) ;
+          this.AllRooms.sendOneClientInfoRoom(this.room,'The success of the attack, the statistics from '+this.to.name+' were modified: Life points {'+this.to.hp+' / '+this.to.hpmax+'} , dexterity {'+this.to.dext+' / '+this.to.dextmax+'} , strength {'+this.to.force+' / '+this.to.forcemax+'} , charm {'+this.to.charme+' / '+this.to.charmemax+'} , lucky {'+this.to.chance+' / '+this.to.chancemax+'}',this.by) ;
         }
       }else{
-        this.AllRooms.sendOneClientInfoRoom(this.room,'echec de l\'attaque',this.by);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'The attack failed.',this.by);
         if(this.to.type == 1){
-          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' vous attaque, mais vous esquivez ',this.by);
+          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attack you, but you dodge ',this.by);
         }
       }
     }else{

@@ -55,28 +55,40 @@ class Obj{
 
   monsterAttack(){//console.log('test');
     var varRooms = this.AllRooms;
-    if (this.type == 3 && Date.now()-this.dateLastAttack > this.timeaction){//eventuellement créer des gardes qui attaquerais les monstres
+    if (this.type == 3 && Date.now()-this.dateLastAttack > this.timeaction){//monster attack
       var cachedCible = [];
-      //console.log(varRooms);
-      for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {//varRooms.roomArray.foreach(function (room, i) {//console.log(cachedCible);
-        if(this.room == varRooms.roomArray[i]){//if (this.room == room.name){
-          for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {//room.foreach(function (obj, i2) {
-            if(varRooms.roomArray[i].object[i2].type == 1 && this.cible != varRooms.roomArray[i].object[i2])
+      for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
+        if(this.room == varRooms.roomArray[i]){
+          for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {
+            if(varRooms.roomArray[i].object[i2].type == 1 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
               cachedCible.push(varRooms.roomArray[i].object[i2]);
-          }//);
+          }
         }
-      }//);
-      this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
-      var action = [];
-      this.dateLastAttack = Date.now();
-      action.action = 'attack';
-      action.by = this;
-      action.to = this.cible;
-      action.byItems = [];
-      action.toItems = [];
-      action.room = this.room;//name room
-      var actionEvent = new Action(this.AllRooms,action);
+      }
+    }else if (this.type == 2 && Date.now()-this.dateLastAttack > this.timeaction){//pnj attack
+      var cachedCible = [];
+      for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
+        if(this.room == varRooms.roomArray[i]){
+          for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {
+            if(varRooms.roomArray[i].object[i2].type == 3 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
+              cachedCible.push(varRooms.roomArray[i].object[i2]);
+            if(varRooms.roomArray[i].object[i2].type == 1 && varRooms.roomArray[i].object[i2].reputation <= 10)
+              cachedCible.push(varRooms.roomArray[i].object[i2]);
+          }
+        }
+      }
     }
+    this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
+    var action = [];
+    this.dateLastAttack = Date.now();
+    action.action = 'attack';
+    action.by = this;
+    action.to = this.cible;
+    action.byItems = [];
+    action.toItems = [];
+    action.room = this.room;//name room
+    var actionEvent = new Action(this.AllRooms,action);
+    
   }
 
   addItems(items){
@@ -87,71 +99,27 @@ class Obj{
   }
     
 
-  actionPossible() {//action que l'ont peut executer vers cet objet
-    if (this.type == 1) {//user
-      this.action[1] = 'attack';
-      this.action[2] = 'charm';
-      this.action[3] = 'taunt';
-      this.action[4] = 'skill';
-      this.action[5] = 'give';
-      this.action[6] = 'threaten';
-      this.action[7] = 'glorified';
-      this.action[8] = 'watch';
-    }
-        
-    if (this.type == 2) {//pnj
-      this.action[1] = 'trade';
-      this.action[2] = 'attack';
-      this.action[3] = 'charm';
-      this.action[4] = 'taunt';
-      this.action[5] = 'skill';
-      this.action[6] = 'give';
-      this.action[7] = 'threaten';
-      this.action[8] = 'glorified';
-      this.action[9] = 'watch';
-    }
-        
-    if (this.type == 3) {//enemy
-      this.action[1] = 'attack';
-      this.action[2] = 'charm';
-      this.action[3] = 'taunt';
-      this.action[4] = 'skill';
-      this.action[5] = 'give';
-      this.action[6] = 'watch';
-    }
-        
-    if (this.type == 4) {//build
-      this.action[1] = 'build';
-      this.action[2] = 'destroy';
-      this.action[3] = 'describe';
-      this.action[4] = 'watch';
-    }
-    return this.action;
-  }
-
   goToRoom(room,user){//console.log(this.AllRooms.roomArray);
     //var cachedUser;
-    for (var i = 0, len = this.AllRooms.roomArray.length; i < len; i++) {//this.AllRooms.roomArray.foreach(function (room, i) {
+    for (var i = 0, len = this.AllRooms.roomArray.length; i < len; i++) {
       if (this.room == this.AllRooms.roomArray[i].name){
-        for (var i2 = 0, len2 = this.AllRooms.roomArray[i].object.length; i2 < len2; i2++) {//this.AllRooms.roomArray[i].foreach(function (obj, i2) {
+        for (var i2 = 0, len2 = this.AllRooms.roomArray[i].object.length; i2 < len2; i2++) {
           //console.log(this.AllRooms.roomArray[i].object[i2].name, user.name);
           if(this.AllRooms.roomArray[i].object[i2]){
             if(this.AllRooms.roomArray[i].object[i2].name == user.name){
-              //cachedUser = Object.assign(new Obj(this),this.AllRooms.roomArray[i].object[i2]);
               delete this.AllRooms.roomArray[i].object[i2];
             }
           }
-        }//);
+        }
       }
-    }//);
+    }
     var cachedRoom = user.room;
     user.room = room.name;
-    //console.log('gotoroom',cachedRoom,room.name)
     this.AllRooms.sendAllClientRoom(cachedRoom);
-    for (var i3 = 0, len3 = this.AllRooms.roomArray.length; i3 < len3; i3++) {//this.AllRooms.roomArray.foreach(function (room, i) {
+    for (var i3 = 0, len3 = this.AllRooms.roomArray.length; i3 < len3; i3++) {
       if(room.name == this.AllRooms.roomArray[i3].name)
         this.AllRooms.roomArray[i3].object.push(this);
-    }//);
+    }
     this.AllRooms.sendAllClientRoom(room.name);
   }
 
@@ -161,9 +129,7 @@ class Obj{
     this.dext = this.dextmax;
     this.chance = this.chancemax;
     this.charme = this.charmemax;
-    //var roomDead = this.room;
     this.goToRoom(this.AllRooms.roomArray[0].name,this);
-    //this.AllRooms.sendAllClientRoom(roomDead);
   }
 
 }
