@@ -43,12 +43,15 @@ fs.readFile('name.json', (err, data) => {
   arrayDoor = [];
   arrayDoor.push('port');
   AllRoomLoaded.createNewRoomDev(5,0,2,5,1,1,0,'tavern',arrayDoor);
+  arrayDoor = [];
   arrayDoor.push('port');
   arrayDoor.push('adventurer\'s cemetery');
   arrayDoor.push('adventurer\'s mountain');
   AllRoomLoaded.createNewRoomDev(2,4,1,0,1,1,2,'adventurer\'s road',arrayDoor);
+  arrayDoor = [];
   arrayDoor.push('adventurer\'s road');
   AllRoomLoaded.createNewRoomDev(2,6,1,1,1,1,3,'adventurer\'s cemetery',arrayDoor);
+  arrayDoor = [];
   arrayDoor.push('adventurer\'s road');
   arrayDoor.push('adventurer\'s waterfall');
   AllRoomLoaded.createNewRoomDev(0,4,1,1,1,1,3,'adventurer\'s mountain',arrayDoor);
@@ -102,10 +105,13 @@ io.on('connection', (socket) => {console.log('client');
     socket.user = user;
       //socket.emit('message', 'message');
       //socket.emit('message-from-server-to-client', msg);
-    AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
-    AllRoomLoaded.sendAllClientRoom(socket.user.room);
+      //console.log(socket);
+      if(socket.user){
+        AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
+        AllRoomLoaded.sendAllClientRoom(socket.user.room);
+      }
   });
-  socket.on('disconnect', (msg) => {
+  /*socket.on('disconnect', (msg) => {//console.log(socket);
     socket.connected = false;
     var roomvar = socket.user.room;
     for (var i = 0, len = AllRoomLoaded.roomArray.length; i < len; i++) {
@@ -121,7 +127,7 @@ io.on('connection', (socket) => {console.log('client');
     }
     AllRoomLoaded.sendAllClientRoom(roomvar);
   });
-    
+    */
       
       
 });

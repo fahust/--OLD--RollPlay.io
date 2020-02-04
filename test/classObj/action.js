@@ -123,6 +123,11 @@ class Action{
       this.unequipItems();
     if (this.action == 'go')
       this.goAction();
+    if (this.action == 'Use item')
+      this.useItems();
+    if (this.action == 'Equip item')
+      this.equipItems();
+      
   }
 
   goAction(){
@@ -252,7 +257,7 @@ class Action{
           }
           this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+' at '+nameCible+' and your target was defeated',this.by);
           this.AllRooms.sendAllClientRoom(this.room);
-          this.AllRooms.sendAllClientInfoRoom(this.room,this.by+' has eliminated '+nameCible);
+          this.AllRooms.sendAllClientInfoRoom(this.room,this.by.name+' has eliminated '+nameCible);
         }else{
           if(this.to.type == 1){
             this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attacks you and subtracts you '+this.by.force,this.to);

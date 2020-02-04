@@ -78,6 +78,7 @@ class Obj{
         }
       }
     }
+    if ((this.type == 2 || this.type == 3) && Date.now()-this.dateLastAttack > this.timeaction){
     this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
     var action = [];
     this.dateLastAttack = Date.now();
@@ -88,11 +89,12 @@ class Obj{
     action.toItems = [];
     action.room = this.room;//name room
     var actionEvent = new Action(this.AllRooms,action);
+    }
     
   }
 
   addItems(items){
-    if (this.nbrItems < this.level){
+    if (this.nbrItems <= 10/*this.level*/){
       this.items.push(items);
       this.nbrItems += 1;
     }
@@ -113,14 +115,16 @@ class Obj{
         }
       }
     }
-    var cachedRoom = user.room;
-    user.room = room.name;
-    this.AllRooms.sendAllClientRoom(cachedRoom);
-    for (var i3 = 0, len3 = this.AllRooms.roomArray.length; i3 < len3; i3++) {
-      if(room.name == this.AllRooms.roomArray[i3].name)
-        this.AllRooms.roomArray[i3].object.push(this);
+    if (user.room){
+      var cachedRoom = user.room;
+      user.room = room.name;
+      this.AllRooms.sendAllClientRoom(cachedRoom);
+      for (var i3 = 0, len3 = this.AllRooms.roomArray.length; i3 < len3; i3++) {
+        if(room.name == this.AllRooms.roomArray[i3].name)
+          this.AllRooms.roomArray[i3].object.push(this);
+      }
+      this.AllRooms.sendAllClientRoom(room.name);
     }
-    this.AllRooms.sendAllClientRoom(room.name);
   }
 
   die(){

@@ -78,29 +78,34 @@ class AllRoom{
   }
   /** connection user */
   connectUser(msg,socket){
-    this.users.forEach(user => {
+    var exist = false;
+    this.users.forEach(user => {//fonctionne pas 
       if (user.name == msg.name && user.socket.connected != true){
         if (user.password == msg.password){
+          exist = true;
           user.socket = socket;
           socket.user = user;
           this.sendAllClientRoom(user.room);
+          this.sendAllClientInfoRoom(user.room,user.name+' is connected');
           return user;
         }else{
-          return 'password is wrong';
+          //return 'password is wrong';
         }
       }
     });
     /** register */
-    var tempUser = new Obj(this,1,10,10,3,3,3,3,3,3,3,3,0,1,msg.name,Date.now(),'port',msg.password,0);
-    tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),tempUser.id));
-    tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),tempUser.id));
-    tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),tempUser.id));
-    tempUser.socket = socket;
-    tempUser.ressource = 100;
-    this.users.push(tempUser);
-    this.roomArray[0].object.push(tempUser);
-    //console.log(tempUser);
-    return tempUser;
+    if (exist == false){
+      var tempUser = new Obj(this,1,10,10,3,3,3,3,3,3,3,3,0,1,msg.name,Date.now(),'port',msg.password,0);
+      tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
+      tempUser.addItems(new Items(this,'consomable',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
+      tempUser.addItems(new Items(this,'persistant',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),2,tempUser.id));
+      tempUser.socket = socket;
+      tempUser.ressource = 100;
+      this.users.push(tempUser);
+      this.roomArray[0].object.push(tempUser);
+      //console.log(tempUser);
+      return tempUser;
+    }
     //this.sendAllClientRoom('port');
   }
   createMonsterOrPnj(room){

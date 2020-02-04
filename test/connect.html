@@ -191,19 +191,8 @@
           })
       }
 
-      document.querySelector('.btn-forge').onclick = function() {//envoyé forge
-        var msg = {"action":"forge", "room":roomClient, "by":nameClient, "to":"", "byItems":"", "toItems":'',"msgCreateItem": [
-        { "name":$( "#recipient-item-name" )},{ "hp":$( "#recipient-item-hp" )},{ "force":$( "#recipient-item-force" )},{ "dext":$( "#recipient-item-dext" )},{ "chance":$( "#recipient-item-luck" )},{ "charme":$( "#recipient-item-charm" )},{ "type":1}
-      ]};
-        if(msg != [])
-          socket.emit('action', JSON.stringify(msg));
-        document.querySelectorAll('.spinner-border').forEach(spinner => {
-          spinner.style.display = "block";
-        })
-        setTimeout(() => {
-          clickAction();
-        }, 3000);
-      }
+
+      
 
 
       function clickObj(){
@@ -285,14 +274,15 @@
       });
 
       socket.on("message", function(msg) {
+        var res = msg;
         objInRoom.forEach(element => {
-          if(msg.contains(element.name)){
+          if(msg.includes(element.name)){console.log(element.name);
             color = '#625550';
           if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
-            var res = msg.replace(element.name,'<span id="objdial" style="color:'+color+'" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span>');
+            res = msg.replace(element.name,'<span id="objdial" style="color:'+color+'" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span>');
           }
         });
-        $( ".chat" ).append( '<div class="chatContainer"><span id="obj" data-type="'+'">'+msg+'</span><span class="time-right"></span></div></div>' );
+        $( ".chat" ).append( '<div class="chatContainer"><span id="obj" data-type="'+'">'+res+'</span><span class="time-right"></span></div></div>' );
           clickObjDial();
           var wtf    = $('.chat');
           var height = wtf[0].scrollHeight;
@@ -304,6 +294,21 @@
 
       // connection
       window.onload = function(){
+
+        document.querySelector('.btn-forge').onclick = function() {//envoyé forge
+        var msg = {"action":"forge", "room":roomClient, "by":nameClient, "to":"", "byItems":"", "toItems":'',"msgCreateItem": [
+        { "name":$( "#recipient-item-name" )},{ "hp":$( "#recipient-item-hp" )},{ "force":$( "#recipient-item-force" )},{ "dext":$( "#recipient-item-dext" )},{ "chance":$( "#recipient-item-luck" )},{ "charme":$( "#recipient-item-charm" )},{ "type":1}
+      ]};
+        if(msg != [])
+          socket.emit('action', JSON.stringify(msg));
+        document.querySelectorAll('.spinner-border').forEach(spinner => {
+          spinner.style.display = "block";
+        })
+        setTimeout(() => {
+          clickAction();
+        }, 3000);
+      }
+
         var btnConnect = document.querySelector('.btn-connect');
         btnConnect.onclick = function() {
           nameClient = document.querySelector('#recipient-name').value;
