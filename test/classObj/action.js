@@ -44,7 +44,7 @@ class Action{
     this.chanceEquipedTo = 0;
     this.charmeEquipedTo = 0;
     if(msg.createItem)
-      this.getItemCreate(msg.createItem);
+      this.getItemCreate(msg.msgCreateItem);
     this.actionLoad();
   }
 

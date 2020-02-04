@@ -96,6 +96,7 @@ class AllRoom{
     tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),tempUser.id));
     tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),tempUser.id));
     tempUser.socket = socket;
+    tempUser.ressource = 100;
     this.users.push(tempUser);
     this.roomArray[0].object.push(tempUser);
     //console.log(tempUser);
@@ -247,24 +248,30 @@ class AllRoom{
     delete varObj.cible;
     
 
-    delete varObj.AllRooms;//supression des obj pour le send
-    delete varObj.socket;//supression des socket
+    delete varObj.AllRooms;
+    delete varObj.socket;
     return varObj;
   }
   /** send all client at all client of room where is client's action launch */
   sendAllClientRoom(roomName){// envoyer les info d'une room a tout les clients de cet room
     this.roomArray.forEach(element => {
-      if (element.name == roomName){//console.log(element.name,roomName);
+      if (element.name == roomName){
         var objToSend = [];
-        element.object.forEach(obj => {//console.log(obj);
+        element.object.forEach(obj => {
           this.actualizeObj(obj);
           if (obj.type == 1 && obj.socket.connected == false){}else{
-            var varObj = Object.assign(new Obj(this),obj);//console.log(varObj.name);
+            var varObj = Object.assign(new Obj(this),obj);
             if (obj.type == 1 || obj.type == 0){
+              //var varItems = [];
               varObj.items.forEach(item => {
+                /*var varItem = Object.assign(new Items(this),item);
+                varItem.AllRooms = [];
+                varItem.owner = [];
+                varItems.push(varItem);*/
                 item.AllRooms = [];
                 item.owner = [];
               });
+              //varObj.items = varItems;
               if(varObj.itemEquip1){
                 varObj.itemEquip1.AllRooms = [];
                 varObj.itemEquip1.owner = [];
@@ -288,6 +295,7 @@ class AllRoom{
               varObj.itemEquip2 = [];
               varObj.itemEquip3 = [];
               varObj.items = [];
+              delete varObj.ressource;
             }
             //console.log(varObj.name);
             varObj = this.deleteStatsUselessForSend(varObj);
