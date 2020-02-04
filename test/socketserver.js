@@ -105,6 +105,22 @@ io.on('connection', (socket) => {console.log('client');
     AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
     AllRoomLoaded.sendAllClientRoom(socket.user.room);
   });
+  socket.on('disconnect', (msg) => {
+    socket.connected = false;
+    var roomvar = socket.user.room;
+    for (var i = 0, len = AllRoomLoaded.roomArray.length; i < len; i++) {
+      if (this.room == AllRoomLoaded.roomArray[i].name){
+        for (var i2 = 0, len2 = AllRoomLoaded.roomArray[i].object.length; i2 < len2; i2++) {
+          if(AllRoomLoaded.roomArray[i].object[i2]){
+            if(AllRoomLoaded.roomArray[i].object[i2].name == socket.user.name){
+              delete AllRoomLoaded.roomArray[i].object[i2];
+            }
+          }
+        }
+      }
+    }
+    AllRoomLoaded.sendAllClientRoom(roomvar);
+  });
     
       
       

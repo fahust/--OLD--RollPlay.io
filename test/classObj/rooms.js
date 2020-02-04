@@ -247,7 +247,7 @@ class AllRoom{
     delete varObj.cible;
     
 
-    delete varObj.AllRooms//supression des obj pour le send
+    delete varObj.AllRooms;//supression des obj pour le send
     delete varObj.socket;//supression des socket
     return varObj;
   }
@@ -268,14 +268,20 @@ class AllRoom{
               if(varObj.itemEquip1){
                 varObj.itemEquip1.AllRooms = [];
                 varObj.itemEquip1.owner = [];
+                varObj.itemEquip1.level = [];
+                varObj.itemEquip1.time = [];
               }
               if(varObj.itemEquip1){
                 varObj.itemEquip2.AllRooms = [];
                 varObj.itemEquip2.owner = [];
+                varObj.itemEquip2.level = [];
+                varObj.itemEquip2.time = [];
               }
               if(varObj.itemEquip1){
                 varObj.itemEquip3.AllRooms = [];
                 varObj.itemEquip3.owner = [];
+                varObj.itemEquip3.level = [];
+                varObj.itemEquip3.time = [];
               }
             }else{
               varObj.itemEquip1 = [];

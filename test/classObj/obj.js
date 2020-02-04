@@ -61,21 +61,21 @@ class Obj{
       for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {//varRooms.roomArray.foreach(function (room, i) {//console.log(cachedCible);
         if(this.room == varRooms.roomArray[i]){//if (this.room == room.name){
           for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {//room.foreach(function (obj, i2) {
-            if(varRooms.roomArray[i].object[i2].type == 1)
+            if(varRooms.roomArray[i].object[i2].type == 1 && this.cible != varRooms.roomArray[i].object[i2])
               cachedCible.push(varRooms.roomArray[i].object[i2]);
           }//);
         }
       }//);
-      var cible = cachedCible[entierAleatoire(0,cachedCible.length)];
+      this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
       var action = [];
       this.dateLastAttack = Date.now();
       action.action = 'attack';
       action.by = this;
-      action.to = cible;
+      action.to = this.cible;
       action.byItems = [];
       action.toItems = [];
       action.room = this.room;//name room
-      //var actionEvent = new Action(this.AllRooms,action);
+      var actionEvent = new Action(this.AllRooms,action);
     }
   }
 
