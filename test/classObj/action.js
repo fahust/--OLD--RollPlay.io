@@ -180,49 +180,53 @@ class Action{
     //penser a retirer l'objet côter client
   }
   byItemEquipedStats(){
-    if (this.by.itemEquip1){
-      this.hpEquipedBy += this.by.itemEquip1.dext;
-      this.forceEquipedBy += this.by.itemEquip1.force;
-      this.dextEquipedBy += this.by.itemEquip1.dext;
-      this.chanceEquipedBy += this.by.itemEquip1.chance;
-      this.charmeEquipedBy += this.by.itemEquip1.charme;
-    }
-    if (this.by.itemEquip2){
-      this.hpEquipedBy += this.by.itemEquip2.dext;
-      this.forceEquipedBy += this.by.itemEquip2.force;
-      this.dextEquipedBy += this.by.itemEquip2.dext;
-      this.chanceEquipedBy += this.by.itemEquip2.chance;
-      this.charmeEquipedBy += this.by.itemEquip2.charme;
-    }
-    if (this.by.itemEquip3){
-      this.hpEquipedBy += this.by.itemEquip3.dext;
-      this.forceEquipedBy += this.by.itemEquip3.force;
-      this.dextEquipedBy += this.by.itemEquip3.dext;
-      this.chanceEquipedBy += this.by.itemEquip3.chance;
-      this.charmeEquipedBy += this.by.itemEquip3.charme;
+    if(this.by){
+      if (this.by.itemEquip1){
+        this.hpEquipedBy += this.by.itemEquip1.dext;
+        this.forceEquipedBy += this.by.itemEquip1.force;
+        this.dextEquipedBy += this.by.itemEquip1.dext;
+        this.chanceEquipedBy += this.by.itemEquip1.chance;
+        this.charmeEquipedBy += this.by.itemEquip1.charme;
+      }
+      if (this.by.itemEquip2){
+        this.hpEquipedBy += this.by.itemEquip2.dext;
+        this.forceEquipedBy += this.by.itemEquip2.force;
+        this.dextEquipedBy += this.by.itemEquip2.dext;
+        this.chanceEquipedBy += this.by.itemEquip2.chance;
+        this.charmeEquipedBy += this.by.itemEquip2.charme;
+      }
+      if (this.by.itemEquip3){
+        this.hpEquipedBy += this.by.itemEquip3.dext;
+        this.forceEquipedBy += this.by.itemEquip3.force;
+        this.dextEquipedBy += this.by.itemEquip3.dext;
+        this.chanceEquipedBy += this.by.itemEquip3.chance;
+        this.charmeEquipedBy += this.by.itemEquip3.charme;
+      }
     }
   }
   toItemEquipedStats(){
-    if (this.by.itemEquip1){
-      this.hpEquipedTo += this.by.itemEquip1.dext;
-      this.forceEquipedTo += this.by.itemEquip1.force;
-      this.dextEquipedTo += this.by.itemEquip1.dext;
-      this.chanceEquipedTo += this.by.itemEquip1.chance;
-      this.charmeEquipedTo += this.by.itemEquip1.charme;
-    }
-    if (this.by.itemEquip2){
-      this.hpEquipedTo += this.by.itemEquip2.dext;
-      this.forceEquipedTo += this.by.itemEquip2.force;
-      this.dextEquipedTo += this.by.itemEquip2.dext;
-      this.chanceEquipedTo += this.by.itemEquip2.chance;
-      this.charmeEquipedTo += this.by.itemEquip2.charme;
-    }
-    if (this.by.itemEquip3){
-      this.hpEquipedTo += this.by.itemEquip3.dext;
-      this.forceEquipedTo += this.by.itemEquip3.force;
-      this.dextEquipedTo += this.by.itemEquip3.dext;
-      this.chanceEquipedTo += this.by.itemEquip3.chance;
-      this.charmeEquipedTo += this.by.itemEquip3.charme;
+    if(this.to){
+      if (this.to.itemEquip1){
+        this.hpEquipedTo += this.to.itemEquip1.dext;
+        this.forceEquipedTo += this.to.itemEquip1.force;
+        this.dextEquipedTo += this.to.itemEquip1.dext;
+        this.chanceEquipedTo += this.to.itemEquip1.chance;
+        this.charmeEquipedTo += this.to.itemEquip1.charme;
+      }
+      if (this.to.itemEquip2){
+        this.hpEquipedTo += this.to.itemEquip2.dext;
+        this.forceEquipedTo += this.to.itemEquip2.force;
+        this.dextEquipedTo += this.to.itemEquip2.dext;
+        this.chanceEquipedTo += this.to.itemEquip2.chance;
+        this.charmeEquipedTo += this.to.itemEquip2.charme;
+      }
+      if (this.to.itemEquip3){
+        this.hpEquipedTo += this.to.itemEquip3.dext;
+        this.forceEquipedTo += this.to.itemEquip3.force;
+        this.dextEquipedTo += this.to.itemEquip3.dext;
+        this.chanceEquipedTo += this.to.itemEquip3.chance;
+        this.charmeEquipedTo += this.to.itemEquip3.charme;
+      }
     }
   }
 

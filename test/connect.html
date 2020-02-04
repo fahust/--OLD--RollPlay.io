@@ -18,6 +18,7 @@
         padding: 10px;
         margin: 10px 0;
         background-image: url("../../img/background.jpg");
+        
       }
       
       .darker {
@@ -268,7 +269,7 @@
           }
           color = '#625550';
           if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
-          $( ".obj" ).append( '<div class="chatContainer objBloc" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"></span></div></div>' );
+          $( ".obj" ).append( '<div class="chatContainer objBloc" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../../img/pnj/'+5+'.jpg" alt="..." class="img-thumbnail"></span></div></div>' );
         });
         clickObj();
       });
