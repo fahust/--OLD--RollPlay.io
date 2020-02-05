@@ -9,6 +9,11 @@ function arrayRemove(arr, value) {
  
 }
 
+function entierAleatoire(min, max)
+{
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 
 class Action{
   constructor(AllRooms,msg,by) {
@@ -357,7 +362,13 @@ class Action{
   }
 
   talk(){
-    //réponse du pnj depuis dialogue.js aleatory
+    if(this.to.type == 2){
+      fs.readFile('dialogue.json', (err, data) => {
+        if (err) throw err;
+        var student = JSON.parse(data);
+        this.AllRooms.sendOneClientInfoRoom(this.room,student[entierAleatoire(0,student.length)],this.by);
+      });
+    }
   }
 
   /*createSkill(){
