@@ -9,7 +9,7 @@ function entierAleatoire(min, max)
 
 class Obj{
     //0 = me ,1 = user, 2 = pnj, 3 = enemy, 4 = build, 5 = forge, 6 = alchimie , 7 = door
-  constructor(AllRooms,type,hp,hpmax,force,forcemax,dext,dextmax,chance,chancemax,charme,charmemax,reputation,level,name,id,room,password,agressivity) {
+  constructor(AllRooms,type,hp,hpmax,force,forcemax,dext,dextmax,chance,chancemax,charme,charmemax,reputation,level,name,id,room,password,agressivity,image = 1) {
     this.AllRooms = AllRooms;
     this.type = type;
     this.name = name;
@@ -40,6 +40,8 @@ class Obj{
     this.dateLastConso = 0;
     this.dateLastAttack = Date.now();
     this.ressource;
+
+    this.image = image;
     
     this.idcrea;
     this.socket = [];

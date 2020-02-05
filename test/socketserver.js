@@ -54,7 +54,19 @@ fs.readFile('name.json', (err, data) => {
   arrayDoor = [];
   arrayDoor.push('adventurer\'s road');
   arrayDoor.push('adventurer\'s waterfall');
+  arrayDoor.push('mountain\'s pic');
   AllRoomLoaded.createNewRoomDev(0,4,1,1,1,1,3,'adventurer\'s mountain',arrayDoor);
+  arrayDoor = [];
+  arrayDoor.push('adventurer\'s mountain');
+  arrayDoor.push('waterfall\'s cave');
+  AllRoomLoaded.createNewRoomDev(0,4,1,1,1,1,3,'adventurer\'s waterfall',arrayDoor);
+  arrayDoor = [];
+  arrayDoor.push('adventurer\'s waterfall');
+  AllRoomLoaded.createNewRoomDev(0,4,1,1,1,1,3,'waterfall\'s cave',arrayDoor);
+  arrayDoor = [];
+  arrayDoor.push('adventurer\'s mountain');
+  arrayDoor.push('mountain\'s cave');
+  AllRoomLoaded.createNewRoomDev(0,4,1,1,1,1,3,'mountain\'s pic',arrayDoor);
 }); 
 
 //setTimeout(() => {

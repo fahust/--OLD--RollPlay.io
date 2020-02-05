@@ -132,6 +132,8 @@ class Action{
       this.useItems();
     if (this.action == 'Equip item')
       this.equipItems();
+    if (this.action == 'Talk')
+      this.talk();
       
   }
 
