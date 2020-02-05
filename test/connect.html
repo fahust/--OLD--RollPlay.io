@@ -7,18 +7,15 @@
 <html lang="en">
   <head>
     <style>
-      body{
-        font-size: 20px;
-        font-weight: bold;
-      }
       .chatContainer {
         border: 2px solid #dedede;
         background-color: #f1f1f1;
         border-radius: 5px;
-        padding: 10px;
-        margin: 10px 0;
+        padding: 1px;
+        margin: 1px 0;
         background-image: url("../../img/background.jpg");
-        
+        font-size: 20px;
+        font-weight: bold;
       }
       
       .darker {
@@ -74,6 +71,7 @@
       var roomClient = '';
       var itemsClient = [];
       var objInRoom = [];
+      var loadSpinner = 0;
 
 
 
@@ -150,7 +148,7 @@
               if (element.firstChild.innerHTML == 'inventory' ){//liste des items du joueur
                 $( ".action" ).empty();
                 itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                 });
                 clickAction()
               }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' ){//listes des items a trade
@@ -158,7 +156,7 @@
                   toItem = element.firstChild.dataset.name;
                 $( ".action" ).empty();
                 itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                 });
                 clickAction()
               }else{
@@ -166,8 +164,8 @@
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.to;
                   $( ".action" ).empty();
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                   clickAction()
                 }else if (element.firstChild.dataset.action){//envoi trade et give
                   var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.to, "byItems":element.firstChild.dataset.item, "toItems":''};
@@ -176,7 +174,7 @@
                   document.querySelectorAll('.spinner-border').forEach(spinner => {
                     spinner.style.display = "block";
                   })
-                  setTimeout(() => {
+                  setTimeout(() => {loadSpinner = 1;
                     clickAction();
                   }, 3000);
                 }else{//envoi des autres actions
@@ -187,7 +185,7 @@
                   document.querySelectorAll('.spinner-border').forEach(spinner => {
                     spinner.style.display = "block";
                   })
-                  setTimeout(() => {
+                  setTimeout(() => {loadSpinner = 1;
                     clickAction();
                   }, 3000);
                 }
@@ -209,7 +207,7 @@
             //console.log(obj.firstChild.dataset.name);
             $( ".action" ).empty();
               action.forEach(element => {
-                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
               });
               clickAction();
             }
@@ -225,7 +223,7 @@
             //console.log(obj.firstChild.dataset.name);
             $( ".action" ).empty();
               action.forEach(element => {
-                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div></div>');
+                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
               });
               clickAction();
             }
@@ -309,7 +307,7 @@
         document.querySelectorAll('.spinner-border').forEach(spinner => {
           spinner.style.display = "block";
         })
-        setTimeout(() => {
+        setTimeout(() => {loadSpinner = 1;
           clickAction();
         }, 3000);
       }
