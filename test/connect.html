@@ -144,7 +144,7 @@
         })
         //choose action and send it
         document.querySelectorAll('.actionBloc').forEach(element => {
-            element.onclick = function() {
+            element.onmouseup  = function() {
               if (element.firstChild.innerHTML == 'inventory' ){//liste des items du joueur
                 $( ".action" ).empty();
                 itemsClient.forEach(item => {
@@ -192,7 +192,9 @@
               }
             }
           })
-          $( ".action" ).empty();
+          $(".action").fadeOut(1000, function(){
+            $( ".action" ).empty();
+            });
       }
 
 
@@ -202,15 +204,19 @@
       function clickObj(){
         //choose obj and get action of
         document.querySelectorAll('.objBloc').forEach(obj => {
-            obj.onclick = function() {
+            obj.onmouseup  = function() {
             action = actionPossible(obj.firstChild.dataset.type);
             var allAction = '';
-            //console.log(obj.firstChild.dataset.name);
-            $( ".action" ).empty();
+            $(".action").fadeOut(1000, function(){
+              $( ".action" ).empty();
               action.forEach(element => {
-                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                });
+                $(".action").fadeOut(1, function(){
+                  $(".action").fadeIn(1000);
+                  clickAction();
+                });
               });
-              clickAction();
             }
           });
       }
@@ -218,15 +224,17 @@
       function clickObjDial(){
         //choose obj and get action of
         document.querySelectorAll('#objdial').forEach(obj => {
-            obj.onclick = function() {
+            obj.onmouseup = function() {
             action = actionPossible(obj.dataset.type);
             var allAction = '';
-            //console.log(obj.firstChild.dataset.name);
             $( ".action" ).empty();
               action.forEach(element => {
                 $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
               });
               clickAction();
+            }
+            obj.onmousedown = function() {
+              
             }
           });
       }
@@ -234,7 +242,7 @@
 
       //items
       function items(){
-          document.querySelector('.inventory').onclick = function(obj) {
+          document.querySelector('.inventory').onmouseup  = function(obj) {
             var allItems = '';
             document.querySelector('.action').innerhtml = "";
             items.forEach(item => {
@@ -243,14 +251,6 @@
             document.querySelector('.action').innerhtml = allItems;
           }
         }
-
-
-      //'<h6>Example heading <span class="badge badge-secondary">New</span></h6>'
-      /*socket.on("message-from-server-to-client", function(msg) {
-      i = i+1;
-          document.getElementById('message').innerHTML = msg;
-          socket.emit('message-from-client-to-server', 'Hello World!'+i);
-      });*/
 
       //RECEPTION
       socket.on("action", function(msg) {
@@ -291,7 +291,6 @@
           var wtf    = $('.chat');
           var height = wtf[0].scrollHeight;
           wtf.scrollTop(height);
-        //console.log(document.querySelector('.chat').innerhtml);
       });
 
       //EMISSION
@@ -299,22 +298,22 @@
       // connection
       window.onload = function(){
 
-        document.querySelector('.btn-forge').onclick = function() {//envoyé forge
-        var msg = {"action":"forge", "room":roomClient, "by":nameClient, "to":"", "byItems":"", "toItems":'',"msgCreateItem": [
-        { "name":$( "#recipient-item-name" )},{ "hp":$( "#recipient-item-hp" )},{ "force":$( "#recipient-item-force" )},{ "dext":$( "#recipient-item-dext" )},{ "chance":$( "#recipient-item-luck" )},{ "charme":$( "#recipient-item-charm" )},{ "type":1}
-      ]};
-        if(msg != [])
-          socket.emit('action', JSON.stringify(msg));
-        document.querySelectorAll('.spinner-border').forEach(spinner => {
-          spinner.style.display = "block";
-        })
-        setTimeout(() => {loadSpinner = 1;
-          clickAction();
-        }, 3000);
-      }
+        document.querySelector('.btn-forge').onmouseup  = function() {//envoyé forge
+          var msg = {"action":"forge", "room":roomClient, "by":nameClient, "to":"", "byItems":"", "toItems":'',"msgCreateItem": [
+          { "name":$( "#recipient-item-name" )},{ "hp":$( "#recipient-item-hp" )},{ "force":$( "#recipient-item-force" )},{ "dext":$( "#recipient-item-dext" )},{ "chance":$( "#recipient-item-luck" )},{ "charme":$( "#recipient-item-charm" )},{ "type":1}
+          ]};
+          if(msg != [])
+            socket.emit('action', JSON.stringify(msg));
+          document.querySelectorAll('.spinner-border').forEach(spinner => {
+            spinner.style.display = "block";
+          })
+          setTimeout(() => {loadSpinner = 1;
+            clickAction();
+          }, 3000);
+        }
 
         var btnConnect = document.querySelector('.btn-connect');
-        btnConnect.onclick = function() {
+        btnConnect.onmouseup  = function() {
           nameClient = document.querySelector('#recipient-name').value;
           var msg = {"name":document.querySelector('#recipient-name').value, "password":document.querySelector('#recipient-password').value};
           socket.emit('connection', JSON.stringify(msg));
