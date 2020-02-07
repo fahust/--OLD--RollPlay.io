@@ -94,7 +94,7 @@ setInterval(() => {
 
 
 
-io.on('connection', (socket) => {console.log('client');
+io.on('connection', (socket) => {
     //première création de l'user
     //var playerId = Date.now().toString();
     //var elementPrepared = new Obj(1,10,10,1,1,1,1,1,1,1,1,1,1);

@@ -21,14 +21,12 @@ class Action{
     this.action = msg.action;
     this.by = by;
     this.room = msg.room;//name room
-    //console.log(msg.to);
     this.getTo(msg.to);
     this.getByItem(msg.byItems);
     this.getToItem(msg.toItems);
     this.to;
     this.byItems;
     this.toItems;
-    //console.log(this);
     this.itemName;
     this.itemHp;
     this.itemForce;
@@ -68,7 +66,7 @@ class Action{
     this.AllRooms.roomArray.forEach(element => {
       if (element.name == this.room){//check room 
         element.object.forEach(obj => {//mise en cache des obj de la room
-          if (obj.name == msgTo){//console.log(obj.name)
+          if (obj.name == msgTo){
             this.to = obj;
             return obj;
           }
@@ -238,7 +236,6 @@ class Action{
   }
 
   attack(){
-    //var AllRooms = Object.assign(new room(),this.AllRooms);
     if (this.to){
       this.byItemEquipedStats();
       this.toItemEquipedStats();
@@ -288,7 +285,6 @@ class Action{
 
 
   skill(skill){
-    //var AllRooms = Object.assign(new room(),this.AllRooms);
     if (this.to){
       this.byItemEquipedStats();
       this.toItemEquipedStats();

@@ -1,5 +1,4 @@
 
-//const Items = require('./items.js');
 const Action = require('./action.js');
 
 function entierAleatoire(min, max)
@@ -103,12 +102,10 @@ class Obj{
   }
     
 
-  goToRoom(room,user){//console.log(this.AllRooms.roomArray);
-    //var cachedUser;
+  goToRoom(room,user){
     for (var i = 0, len = this.AllRooms.roomArray.length; i < len; i++) {
       if (this.room == this.AllRooms.roomArray[i].name){
         for (var i2 = 0, len2 = this.AllRooms.roomArray[i].object.length; i2 < len2; i2++) {
-          //console.log(this.AllRooms.roomArray[i].object[i2].name, user.name);
           if(this.AllRooms.roomArray[i].object[i2]){
             if(this.AllRooms.roomArray[i].object[i2].name == user.name){
               delete this.AllRooms.roomArray[i].object[i2];
