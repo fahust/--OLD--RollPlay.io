@@ -84,19 +84,21 @@ AllRoomLoaded.prepareToStringify();
   });
   */
   
-setInterval(() => {
-  AllRoomLoaded.prepareToStringify();
-  var data = JSON.stringify(AllRoomLoaded, null, 2);
-  fs.writeFile('student.json', JSON.minify(data), (err) => {
-    if (err) throw err;
-  });
-}, 2000);
+  function save(){
+    setInterval(() => {
+      AllRoomLoaded.prepareToStringify();
+      var data = JSON.stringify(AllRoomLoaded.users, null, 2);
+      fs.writeFile('student.json', JSON.minify(data), (err) => {
+        if (err) throw err;
+      });
+    }, 100);
+}
 
 
 
-io.on('connection', (socket) => {
+io.on('connection', (socket) => {console.log('client connected')
   
-  socket.on('action', (msg) => {
+  socket.on('action', (msg) => {//console.log(socket.user)
     AllRoomLoaded.action(JSON.parse(msg),socket.user);
   });
 
@@ -106,13 +108,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on('connection', (msg) => {//console.log(AllRoomLoaded)
-    var user = AllRoomLoaded.connectUser(JSON.parse(msg),socket);
-    socket.user = user;
-    
-      if(socket.user){
+    var userexist;
+    userexist = AllRoomLoaded.connectUser(JSON.parse(msg),socket);
+    //console.log(userexist);
+    //socket.user = user;
+      /*if(userexist == 0){console.log('creation compte')
+      var user = AllRoomLoaded.creationAccount(JSON.parse(msg),socket)
+      socket.user = user
         AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
         AllRoomLoaded.sendAllClientRoom(socket.user.room);
-      }
+      }*/
+      //save()
   });
   
   /*socket.on('disconnect', (msg) => {//console.log(socket);
