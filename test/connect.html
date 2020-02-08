@@ -7,15 +7,47 @@
 <html lang="en">
   <head>
     <style>
+
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+border-color: red #f015ca;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(94, 73, 73); 
+  border-radius: 10px;
+border-color: red #f015ca;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(94, 73, 73); 
+}
+
+
+
       .chatContainer {
         border: 2px solid #dedede;
         background-color: #f1f1f1;
         border-radius: 5px;
-        padding: 1px;
-        margin: 1px 0;
+        padding: 10px;
+        margin: 10px 0;
         background-image: url("../../img/background.jpg");
         font-size: 20px;
         font-weight: bold;
+      }
+
+      .chatContainerDiv{
+        display:inline-block;
+        clear:both;
+        float:left;
       }
       
       .darker {
@@ -59,7 +91,8 @@
     <title>RollPlay.io</title>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.3/beautify.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script>
@@ -71,8 +104,8 @@
       var roomClient = '';
       var itemsClient = [];
       var objInRoom = [];
+      var cibleName = '';
       var loadSpinner = 0;
-
 
 
       function actionPossible(type){//action que l'ont peut executer vers cet objet
@@ -154,21 +187,23 @@
               }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' ){//listes des items a trade
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.name;
+                  cibleName = toItem ;
                 $( ".action" ).empty();
                 itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                 });
                 clickAction()
               }else{
                 if (element.firstChild.dataset.inventory){//liste d'action avec items du joueur
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.to;
+                  cibleName = toItem ;
                   $( ".action" ).empty();
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                   clickAction()
                 }else if (element.firstChild.dataset.action){//envoi trade et give
-                  var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.to, "byItems":element.firstChild.dataset.item, "toItems":''};
+                  var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":cibleName, "byItems":element.firstChild.dataset.item, "toItems":''};
                   if(msg != [])
                     socket.emit('action', JSON.stringify(msg));
                   document.querySelectorAll('.spinner-border').forEach(spinner => {
@@ -192,14 +227,40 @@
               }
             }
           })
-          $(".action").fadeOut(1000, function(){
-            $( ".action" ).empty();
-            });
+          //if($(".actionBloc")){
+            //$(".actionBloc").fadeOut(1000, function(){
+              //$( ".actionBloc" ).empty();
+             // });
+          //}
       }
 
 
       
+      function fadeIn(element) {
+        var op = 0;  // initial opacity
+        var timer = setInterval(function () {
+            if (op >= 1){
+                clearInterval(timer);
+                element.style.display = 'block';
+            }
+            element.style.opacity = op;
+            element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+            op += 0.1;
+        }, 50);
+    }
 
+    function fadeOut(element) {
+        var op = 1;  // initial opacity
+        var timer = setInterval(function () {
+            if (op <= 0.1){
+                clearInterval(timer);
+                element.style.display = 'none';
+            }
+            element.style.opacity = op;
+            element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+            op -= op * 0.1;
+        }, 50);
+    }
 
       function clickObj(){
         //choose obj and get action of
@@ -207,16 +268,19 @@
             obj.onmouseup  = function() {
             action = actionPossible(obj.firstChild.dataset.type);
             var allAction = '';
-            $(".action").fadeOut(1000, function(){
-              $( ".action" ).empty();
-              action.forEach(element => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                });
-                $(".action").fadeOut(1, function(){
-                  $(".action").fadeIn(1000);
+            //document.querySelectorAll('.action').forEach(element => {console.log(element);
+              //$(this).fadeOut(1000, function(){
+                $( ".action" ).empty();
+                action.forEach(element => {
+                    $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" id=" actionBloc '+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  });
+                  document.querySelectorAll('.actionBloc').forEach(element => {
+                    fadeIn(element);
+                    clickAction();
+                  })
+                  //$(".actionBloc").effect("slide")
                   clickAction();
-                });
-              });
+              //});
             }
           });
       }
@@ -229,7 +293,7 @@
             var allAction = '';
             $( ".action" ).empty();
               action.forEach(element => {
-                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span>span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
               });
               clickAction();
             }
@@ -256,20 +320,27 @@
       socket.on("action", function(msg) {
         msg.action
       });
-      socket.on("allObj", function(msg) {//console.log(msg);
+      socket.on("allObj", function(msg) {
+        $("button").remove();
         var allObj = '';
         $( ".obj" ).empty();
         msg.forEach(element => {
           objInRoom.push(element);
           if (element.name == nameClient){
+            if(roomClient != element.room){
             roomClient = element.room;
+            console.log(roomClient);
+            document.body.style.background = "#f3f3f3 url('../../img/spot/"+roomClient+".jpg') no-repeat right top";
+            }
             element.type = 0;
             itemsClient = element.items;
           }
           color = '#625550';
           if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
-          $( ".obj" ).append( '<div class="chatContainer objBloc" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../../img/pnj/'+5+'.jpg" alt="..." class="img-thumbnail"></span></div></div>' );
+          $( ".obj" ).append( '<li class="chatContainer objBloc ui-state-default" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../../img/pnj/'+5+'.jpg" alt="..." class="img-thumbnail"></span></div></li>' );
         });
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
         clickObj();
       });
       socket.on("oneObj", function(msg) {
@@ -280,17 +351,51 @@
       socket.on("message", function(msg) {
         var res = msg;
         objInRoom.forEach(element => {
-          if(msg.includes(element.name)){console.log(element.name);
+          if(msg.includes(element.name)){
             color = '#625550';
           if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
             res = msg.replace(element.name,'<span id="objdial" style="color:'+color+'" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span>');
           }
         });
-        $( ".chat" ).append( '<div class="chatContainer"><span id="obj" data-type="'+'">'+res+'</span><span class="time-right"></span></div></div>' );
+        $( ".chat" ).append( '<div class="chatContainer chatContainerDiv"><span id="obj" data-type="'+'">'+res+'</span><span class="time-right"></span></div></div>' );
+          //fadeIn(element);
+          //$(".actionBloc").effect("slide")
           clickObjDial();
           var wtf    = $('.chat');
           var height = wtf[0].scrollHeight;
           wtf.scrollTop(height);
+
+          if(msg.includes('dodge')){
+            $( ".chatContainerDiv" ).last().effect("bounce",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+            var wtf    = $('.chat');
+              var height = wtf[0].scrollHeight;
+              wtf.scrollTop(height);
+            });
+          }else if((msg.includes('attack') || msg.includes('attack')) && !msg.includes('failed') ){
+            $( ".chatContainerDiv" ).last().effect("pulsate",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+            var wtf    = $('.chat');
+              var height = wtf[0].scrollHeight;
+              wtf.scrollTop(height);
+            });
+          }else if(msg.includes('gived') || msg.includes('traded')){
+            $( ".chatContainerDiv" ).last().effect("Highlight",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+            var wtf    = $('.chat');
+              var height = wtf[0].scrollHeight;
+              wtf.scrollTop(height);
+            });
+          }else if(msg.includes('taunt')){
+            $( ".chatContainerDiv" ).last().effect("shake",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+            var wtf    = $('.chat');
+              var height = wtf[0].scrollHeight;
+              wtf.scrollTop(height);
+            });
+          }else{
+            $( ".chatContainerDiv" ).last().effect("slide",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+            var wtf    = $('.chat');
+              var height = wtf[0].scrollHeight;
+              wtf.scrollTop(height);
+            });
+          }
       });
 
       //EMISSION
@@ -412,21 +517,19 @@
     
 
       <!--chat-->
-      <div class="row" style="margin:2px;">
-        <div class="col-9" style="height: 100vh;border:2px solid black;padding:5px;">
-          <div class="chat" style="height: 95vh;overflow:auto;border:2px solid black;padding:5px;">
+      <div class="row" style="margin:2px;height: 95vh;">
+        <div class="col-9" style="height: 95vh;border:0px solid black;padding:10px;">
+          <div class="chat" style="height: 95vh;overflow:auto;border:0px solid black;padding:10px;">
             
-
-            <p id="message"></p>
           </div>
           <input type="text" placeholder="message" class="message-field form-control" aria-label="Username" aria-describedby="basic-addon1" >
         </div>
         <div class="col-3">
           <div class="row">
-            <div class="col-12 obj" style="height: 50vh;overflow:auto;border:2px solid black;padding:5px;">
+            <ol class="col-12 obj" id="sortable" style="height: 50vh;overflow:auto;border:0px solid black;padding:10px;">
             
-            </div>
-            <div class="col-12 action" style="height: 50vh;overflow:auto;border:2px solid black;padding:5px;">
+            </ol>
+            <div class="col-12 action" style="height: 50vh;overflow:auto;border:0px solid black;padding:10px;">
             
             </div>
           </div>

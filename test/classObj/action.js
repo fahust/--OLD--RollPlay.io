@@ -16,7 +16,7 @@ function entierAleatoire(min, max)
 
 
 class Action{
-  constructor(AllRooms,msg,by) {
+  constructor(AllRooms,msg,by) { console.log(msg)
     this.AllRooms = AllRooms;
     this.action = msg.action;
     this.by = by;
@@ -159,16 +159,18 @@ class Action{
   }
 
   trade(){
-    if(this.to.type == 2){//pnj
+    if(this.to){
+      if(this.to.type == 2){//pnj
 
-      var toItems = this.AllRooms.getItemsAleatoire(this.byItems);
-      toItems.owner = this.by;
+        var toItems = this.AllRooms.getItemsAleatoire(this.byItems);
+        toItems.owner = this.by;
 
-      this.by.items.push(toItems);
-      delete this.by.items[this.byItems];
-      this.AllRooms.sendRoom(this.by.room);
-      this.AllRooms.sendOneClientInfoRoom(this.room,'You have traded '+this.byItems+' to '+this.to.name+' in return for '+toItems,this.by);
-      this.AllRooms.sendAllClientRoom(this.room);
+        this.by.items.push(toItems);
+        delete this.by.items[this.byItems];
+        //this.AllRooms.sendRoom(this.by.room);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You have traded '+this.byItems+' to '+this.to.name+' in return for '+toItems.name,this.by);
+        this.AllRooms.sendAllClientRoom(this.room);
+      }
     }
   }
 
@@ -179,9 +181,9 @@ class Action{
     this.to.items.push(this.byItems);
     delete this.by.items[this.byItems];
     this.by.nbrItems -= 1;
-    this.AllRooms.sendOneClientInfoRoom(this.room,'You have gived '+this.byItems+' to '+this.to.name,this.by);
+    this.AllRooms.sendOneClientInfoRoom(this.room,'You have gived '+this.byItems.name+' to '+this.to.name,this.by);
     if(this.to.type == 1)
-      this.AllRooms.sendOneClientInfoRoom(this.room,'You have received '+this.toItems+' by '+this.to.name,this.to);
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have received '+this.toItems.name+' by '+this.to.name,this.to);
     //penser a retirer l'objet côter client
   }
   byItemEquipedStats(){
@@ -243,7 +245,7 @@ class Action{
         this.to.hp -= this.by.force+this.forceEquipedBy;
         if (this.to.hp <= 0){
           this.by.addItems(this.AllRooms.getItemsAleatoire(this.to.level,this.by));
-          if (this.to.type == 1){//console.log('test')
+          if (this.to.type == 1){
             this.to.die();
           }
           if (this.to.type == 2 || this.to.type == 3 ){
@@ -268,14 +270,14 @@ class Action{
           this.AllRooms.sendAllClientInfoRoom(this.room,this.by.name+' has eliminated '+nameCible);
         }else{
           if(this.to.type == 1){
-            this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attacks you and subtracts you '+this.by.force,this.to);
+            this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attacks you and subtracts you '+this.by.force+this.forceEquipedBy+' life points',this.to);
           }
-          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+' at '+this.to.name,this.by) ;
+          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+this.forceEquipedBy+' life points at '+this.to.name,this.by) ;
         }
       }else{
         this.AllRooms.sendOneClientInfoRoom(this.room,'The attack failed.',this.by);
         if(this.to.type == 1){
-          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attack you, but you dodge ',this.by);
+          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' attack you, but you dodge ',this.to);
         }
       }
     }else{
