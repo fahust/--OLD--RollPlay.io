@@ -120,8 +120,6 @@ class Action{
       this.describe();
     if (this.action == 'forge')
       this.forge();
-    if (this.action == 'watch')
-      this.watch();
     if (this.action == 'unequip all item')
       this.unequipItems();
     if (this.action == 'go')
@@ -238,7 +236,7 @@ class Action{
   }
 
   attack(){
-    if (this.to){
+    if (this.to && this.by){
       this.byItemEquipedStats();
       this.toItemEquipedStats();
       if ((this.by.dext+this.dextEquipedBy+this.chanceEquipedBy)*(Math.random()*10) > (this.to.dext+this.dextEquipedTo+this.chanceEquipedTo)*(Math.random()*10)){
@@ -341,11 +339,12 @@ class Action{
   }
 
   watch(){
-    if (this.to.description != ''){
+    this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' :<p> Strength : '+this.to.force+'</p><p> Dexterity : '+this.to.dext+'</p><p> Luck : '+this.to.chance+'</p><p> Charm : '+this.to.charme+'</p><p> Level : '+this.to.level+'</p>',this.by) ;
+    /*if (this.to.description != ''){
       this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by) ;
-    }else{
+    }else{console.log('test');
       this.AllRooms.sendOneClientInfoRoom(this.room,'Nothing to watch',this.by);
-    }
+    }*/
   }
 
   describe(){

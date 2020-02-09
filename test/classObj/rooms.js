@@ -186,11 +186,11 @@ class AllRoom{
     this.roomArray.forEach(element => {
       if(element.name == room && entierAleatoire(1,10) == 5){
         if(element.danger > 0){
-          var tempObj = new Obj(this,3,entierAleatoire(10,10*element.danger),entierAleatoire(10,10*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),0,entierAleatoire(1,1*element.danger),this.getNammeAtLoad(),Date.now(),room,element.name,entierAleatoire(1,20),entierAleatoire(1,20));
+          var tempObj = new Obj(this,3,entierAleatoire(10,10*element.danger),entierAleatoire(10,10*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),0,entierAleatoire(1,1*element.danger),this.getNammeAtLoad(),Date.now(),room,element.name,entierAleatoire(1,20),entierAleatoire(1,11));
           element.object.push(tempObj);
         }else{
           this.generateStats();
-          var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',0,entierAleatoire(1,20));
+          var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',0,entierAleatoire(1,37));
           element.object.push(tempObj);
         }
       }
@@ -222,21 +222,28 @@ class AllRoom{
       this.savedNamePnjs.push(name);
   }*/
   /** create a new room for development */
-  createNewRoomDev(nbrItems,type2,type3,type4,type5,type6,danger,name,arrayDoor){//console.log(name);
+  createNewRoomDev(nbrItems,type2,type3,type4,type5,type6,danger,name,arrayDoor){
     var varRoom = new OneRoom(danger,name);
     var type = 0;
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 6; i++) {//if(name == 'port'){console.log(name);}
       if (i == 1){type = type2;}else if (i == 2){type = type3;}else if (i == 3){type = type4;}else if (i == 4){type = type5;}else if (i == 6){type = type6;}
-      for (let i2 = 0; i2 < type; i2++) {
+      for (let i2 = 0; i2 < type; i2++) {//if(name == 'port'){console.log(i,type,i2);}
         this.generateStats(i);
-        var obj = new Obj(this,i,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),name,'',entierAleatoire(1,20),entierAleatoire(1,20));
+        if(i == 2){
+          var image = entierAleatoire(1,37)
+        }else if(i == 3){
+          var image = entierAleatoire(1,11)
+        }
+        var varName;
+        if(i == 4){varName = 'build'}else if(i == 5){varName = 'forge'}else if(i == 6){varName = 'alchemy'}else{varName = this.getNammeAtLoad()}
+        var obj = new Obj(this,i,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,varName,Date.now(),name,'',entierAleatoire(1,20),image);
         for (let i = 0; i < nbrItems; i++) 
           obj.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),obj.id));
         varRoom.object.push(obj);
       }
     }
-    for (let i3 = 0; i3 < arrayDoor.length; i3++) {
-      var obj = new Obj(this,7,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,arrayDoor[i3],Date.now(),name,'',0,entierAleatoire(1,20));//DOOR
+    for (let i3 = 0; i3 < arrayDoor.length; i3++) {//console.log(arrayDoor[i3]);
+      var obj = new Obj(this,7,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,arrayDoor[i3],Date.now(),name,'',0,arrayDoor[i3]);//DOOR
       varRoom.object.push(obj);
     }
     this.roomArray.push(varRoom);
@@ -262,7 +269,7 @@ class AllRoom{
         obj.dateLastConso = 0;
       }
     }
-    //obj.monsterAttack();
+    obj.monsterAttack();
   }
 
   deleteStatsUselessForSend(varObj){
