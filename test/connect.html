@@ -8,30 +8,73 @@
   <head>
     <style>
 
-::-webkit-scrollbar {
-  width: 15px;
-}
+      
+      @media screen and (min-width: 640px) {
+        .phoneoverflow {
+          overflow: hidden;
+          height: 100vh;
+        }
 
-/* Track */
-::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey; 
-  border-radius: 10px;
-border-color: red #f015ca;
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: rgb(94, 73, 73); 
-  border-radius: 10px;
-border-color: red #f015ca;
-}
+        .inputResponsive{
+          margin-top: 20px;
+          }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(94, 73, 73); 
-}
+        .chat{
+          height: 90vh;
+          overflow:auto;
+          padding:10px;
+        }
+      }
+
+      @media screen and (max-width: 640px) {
+        .phoneoverflow {
+          overflow: visible;
+          height: 100%;
+        }
+
+        .inputResponsive{
+          margin-top: 20px;
+          }
+
+        .chat{
+          height: 85vh;
+          overflow:auto;
+          padding:10px;
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 15px;
+      }
+
+      /* Track */
+      ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px grey; 
+        border-radius: 10px;
+      border-color: red #f015ca;
+      }
+      
+      /* Handle */
+      ::-webkit-scrollbar-thumb {
+        background: rgb(94, 73, 73); 
+        border-radius: 10px;
+      border-color: red #f015ca;
+      }
+
+      /* Handle on hover */
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgb(94, 73, 73); 
+      }
+
+      body{
+        -webkit-transition: background-image 0.5s ease  ;
+        transition: background-image 0.5s ease  ;
+      }
 
 
+      .icons{
+        width:40px !important;
+      }
 
       .chatContainer {
         border: 2px solid #dedede;
@@ -39,9 +82,34 @@ border-color: red #f015ca;
         border-radius: 5px;
         padding: 10px;
         margin: 10px 0;
-        background-image: url("../../img/background.jpg");
+        background-image: url("../img/background.jpg");
         font-size: 20px;
         font-weight: bold;
+      }
+
+      
+      .chatContainerMenu {
+        border: 2px solid #dedede;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: -5px;
+        /*background-image: url("../../img/background.jpg");*/
+        font-size: 20px;
+        font-weight: bold;
+        width:100%;
+        background: 
+          /* top, transparent red, faked with gradient */ 
+          linear-gradient(
+            rgba(129, 99, 99, 0.45), 
+            rgba(126, 111, 111, 0.45)
+          ),
+          url("../img/background.jpg")
+      }
+
+      .objBloc img {
+      object-fit: cover !important;
+      height:60px;
       }
 
       .chatContainerDiv{
@@ -108,6 +176,12 @@ border-color: red #f015ca;
       var loadSpinner = 0;
 
 
+      function entierAleatoire(min, max)
+      {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+
       function actionPossible(type){//action que l'ont peut executer vers cet objet
       var action = [];
       if (type == 0) {//me
@@ -116,7 +190,7 @@ border-color: red #f015ca;
           action[3] = 'equip item';
           action[3] = 'unequip all item';
           action[4] = 'describe';
-          action[5] = 'show';
+          action[5] = 'watch';
         }
 
         if (type == 1) {//user
@@ -179,29 +253,35 @@ border-color: red #f015ca;
         document.querySelectorAll('.actionBloc').forEach(element => {
             element.onmouseup  = function() {
               if (element.firstChild.innerHTML == 'inventory' ){//liste des items du joueur
-                $( ".action" ).empty();
-                itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                $( ".actionBloc" ).effect("fade",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+                  $( this ).remove();
+                  itemsClient.forEach(item => {
+                    $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  });
+                  clickAction()
                 });
-                clickAction()
               }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' ){//listes des items a trade
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.name;
                   cibleName = toItem ;
-                $( ".action" ).empty();
-                itemsClient.forEach(item => {
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                });
-                clickAction()
+                  $( ".actionBloc" ).effect("fade",500,function(){
+                    $( this ).remove();
+                    itemsClient.forEach(item => {
+                      $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    });
+                    clickAction()
+                  });
               }else{
                 if (element.firstChild.dataset.inventory){//liste d'action avec items du joueur
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.to;
                   cibleName = toItem ;
-                  $( ".action" ).empty();
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                  $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                  clickAction()
+                  $( ".actionBloc" ).effect("fade",500,function(){
+                    $( this ).remove();
+                    $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    clickAction()
+                    });
                 }else if (element.firstChild.dataset.action){//envoi trade et give
                   var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":cibleName, "byItems":element.firstChild.dataset.item, "toItems":''};
                   if(msg != [])
@@ -262,27 +342,33 @@ border-color: red #f015ca;
         }, 50);
     }
 
+    function clickObjEffect(obj,action){
+      $( ".actionBloc" ).remove();
+      action.forEach(element => {  
+          $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" id=" actionBloc '+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span><img src="../img/icons/'+element+'.png" alt="..." class="icons"></div></div>');
+        });
+        document.querySelectorAll('.actionBloc').forEach(element => {
+          fadeIn(element);
+          clickAction();
+        })
+        clickAction();
+    }
+
       function clickObj(){
         //choose obj and get action of
         document.querySelectorAll('.objBloc').forEach(obj => {
-            obj.onmouseup  = function() {
+          obj.onmouseup  = function() {
             action = actionPossible(obj.firstChild.dataset.type);
             var allAction = '';
-            //document.querySelectorAll('.action').forEach(element => {console.log(element);
-              //$(this).fadeOut(1000, function(){
-                $( ".action" ).empty();
-                action.forEach(element => {
-                    $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" id=" actionBloc '+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                  });
-                  document.querySelectorAll('.actionBloc').forEach(element => {
-                    fadeIn(element);
-                    clickAction();
-                  })
-                  //$(".actionBloc").effect("slide")
-                  clickAction();
-              //});
+            if($( ".actionBloc" ).length > 0 ){
+              $( ".actionBloc" ).effect("fade",500,function(){
+                clickObjEffect(obj,action);
+              });
+            }else{
+              clickObjEffect(obj,action);
             }
-          });
+          }
+        });
       }
 
       function clickObjDial(){
@@ -291,14 +377,11 @@ border-color: red #f015ca;
             obj.onmouseup = function() {
             action = actionPossible(obj.dataset.type);
             var allAction = '';
-            $( ".action" ).empty();
+            $( ".actionBloc" ).remove();
               action.forEach(element => {
                 $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
               });
               clickAction();
-            }
-            obj.onmousedown = function() {
-              
             }
           });
       }
@@ -323,26 +406,41 @@ border-color: red #f015ca;
       socket.on("allObj", function(msg) {
         $("button").remove();
         var allObj = '';
-        $( ".obj" ).empty();
+        if($( ".objBloc" ).length > 0 ){
+          $( ".objBloc" ).effect("fade",500,function(){
+            AllObjEffect(msg);
+          });
+        }else{
+          AllObjEffect(msg);
+        }
+      });
+
+      function AllObjEffect(msg){
+        $( ".objBloc" ).remove();
         msg.forEach(element => {
           objInRoom.push(element);
           if (element.name == nameClient){
             if(roomClient != element.room){
             roomClient = element.room;
-            console.log(roomClient);
-            document.body.style.background = "#f3f3f3 url('../../img/spot/"+roomClient+".jpg') no-repeat right top";
+            document.body.style.background = "#f3f3f3 url('../img/spot/"+roomClient.replace("'", "")+".jpg') no-repeat center";
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundAttachment = 'fixed';
             }
             element.type = 0;
+            itemsClient = [];
             itemsClient = element.items;
           }
           color = '#625550';
-          if(element.type == 1){color = '#D8DE0D'}else if(element.type == 2){color = '#395CC3'}else if(element.type == 3){color = '#BD2A2A'}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550'}
-          $( ".obj" ).append( '<li class="chatContainer objBloc ui-state-default" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../../img/pnj/'+5+'.jpg" alt="..." class="img-thumbnail"></span></div></li>' );
+          if(element.type == 1){color = '#D8DE0D';imageFolder = 'pnj/';}else if(element.type == 2){color = '#395CC3';imageFolder = 'pnj/';}else if(element.type == 3){color = '#BD2A2A';imageFolder = 'monster/';}else if(element.type == 4){color = '#625550'}else if(element.type == 5){color = '#625550'}else if(element.type == 6){color = '#625550'}else if(element.type == 7){color = '#625550';imageFolder = 'spot/';}
+          if(element.type == 4){element.image = 'build';imageFolder = 'objspot/'}
+          if(element.type == 5){element.image = 'forge';imageFolder = 'objspot/'}
+          if(element.type == 6){element.image = 'alchemy';imageFolder = 'objspot/'}
+          $( ".obj" ).append( '<li class="chatContainer objBloc ui-state-default" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../img/'+imageFolder+element.image.toString().replace("'", "")+'.jpg" alt="..." class="img-thumbnail"></span></div></li>' );
         });
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
         clickObj();
-      });
+      }
       socket.on("oneObj", function(msg) {
         document.querySelector('#'+msg.id).innerhtml = '<div class="chatContainer objBloc"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"></span></div></div>';
         clickObj();
@@ -379,6 +477,12 @@ border-color: red #f015ca;
             });
           }else if(msg.includes('gived') || msg.includes('traded')){
             $( ".chatContainerDiv" ).last().effect("Highlight",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
+            var wtf    = $('.chat');
+              var height = wtf[0].scrollHeight;
+              wtf.scrollTop(height);
+            });
+          }else if(msg.includes('charmed')){
+            $( ".chatContainerDiv" ).last().effect("fade",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
             var wtf    = $('.chat');
               var height = wtf[0].scrollHeight;
               wtf.scrollTop(height);
@@ -515,25 +619,29 @@ border-color: red #f015ca;
       </div>
     </div>
     
-
       <!--chat-->
-      <div class="row" style="margin:2px;height: 95vh;">
-        <div class="col-9" style="height: 95vh;border:0px solid black;padding:10px;">
-          <div class="chat" style="height: 95vh;overflow:auto;border:0px solid black;padding:10px;">
+    <div class="container-fluid phoneoverflow">
+      <div class="row" style="padding:10px;margin:2px;height:90%;">
+        <div class="col-12 col-sm-9" style="height:95vh;border:0px solid black;padding:10px;">
+          <div class="chat">
             
           </div>
-          <input type="text" placeholder="message" class="message-field form-control" aria-label="Username" aria-describedby="basic-addon1" >
+          <input type="text" placeholder="message" class="message-field form-control inputResponsive" aria-label="Username" aria-describedby="basic-addon1" >
         </div>
-        <div class="col-3">
+        <div class="col-12 col-sm-3">
           <div class="row">
-            <ol class="col-12 obj" id="sortable" style="height: 50vh;overflow:auto;border:0px solid black;padding:10px;">
+            <div class="chatContainerMenu" >Interactive</div>
+            <ol class="col-12 col-sm-12 obj" id="sortable" style="height: 40vh;overflow:auto;border:0px solid black;padding:10px;">
             
             </ol>
-            <div class="col-12 action" style="height: 50vh;overflow:auto;border:0px solid black;padding:10px;">
+            <div class="chatContainerMenu" >Action</div>
+            <div class="col-12 col-sm-12 action" style="height: 40vh;overflow:auto;border:0px solid black;padding:10px;">
+              
             
             </div>
           </div>
         </div>
       </div>
+    </div>
   </body>
 </html>

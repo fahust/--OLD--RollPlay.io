@@ -39,10 +39,10 @@ fs.readFile('name.json', (err, data) => {
   var arrayDoor = [];
   arrayDoor.push('tavern');
   arrayDoor.push('adventurer\'s road');
-  AllRoomLoaded.createNewRoomDev(5,0,2,5,1,1,0,'port',arrayDoor);
+  AllRoomLoaded.createNewRoomDev(5,0,2,0,1,1,0,'port',arrayDoor);
   arrayDoor = [];
   arrayDoor.push('port');
-  AllRoomLoaded.createNewRoomDev(5,0,2,5,1,1,0,'tavern',arrayDoor);
+  AllRoomLoaded.createNewRoomDev(5,0,2,0,1,1,0,'tavern',arrayDoor);
   arrayDoor = [];
   arrayDoor.push('port');
   arrayDoor.push('adventurer\'s cemetery');
