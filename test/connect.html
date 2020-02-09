@@ -421,6 +421,9 @@
           objInRoom.push(element);
           if (element.name == nameClient){
             if(roomClient != element.room){
+              $(".chatContainerDiv").remove();
+              $( ".chatContainerDiv" ).effect("fade",500,function(){
+          });
             roomClient = element.room;
             document.body.style.background = "#f3f3f3 url('../img/spot/"+roomClient.replace("'", "")+".jpg') no-repeat center";
             document.body.style.backgroundSize = "cover";
