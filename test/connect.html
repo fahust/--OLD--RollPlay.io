@@ -259,7 +259,7 @@
                   $( this ).remove();
                   $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                   itemsClient.forEach(item => {
-                    $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span translate="no" id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    $(".action").append( '<div class="chatContainer actionBloc" data-type="'+item.type+'" id="'+item.name+'"><span translate="no" id="obj" data-inventory="true" data-type="'+item.type+'" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                   });
                   clickAction()
                 });
@@ -269,6 +269,7 @@
                   cibleName = toItem ;
                   $( ".actionBloc" ).effect("fade",500,function(){
                     $( this ).remove();
+                  $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                     itemsClient.forEach(item => {
                       $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span translate="no" id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                     });
@@ -278,12 +279,17 @@
                 if (element.firstChild.dataset.inventory){//liste d'action avec items du joueur
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.to;
+                  typeItem = element.firstChild.dataset.type;
                   cibleName = toItem ;
                   $( ".actionBloc" ).effect("fade",500,function(){
                     $( this ).remove();
+                  $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
+                  if(typeItem == 1){
                     $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span translate="no" id="obj" data-item="'+nameItem+'">Use Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                  }else{
                     $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span translate="no" id="obj" data-item="'+nameItem+'">Equip Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                     clickAction()
+                  }
                     });
                 }else if (element.firstChild.dataset.action){//envoi trade et give
                   var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":cibleName, "byItems":element.firstChild.dataset.item, "toItems":''};
@@ -354,7 +360,9 @@
     function clickObjEffect(obj,action){
       $( ".actionBloc" ).remove();
       action.forEach(element => {  
-          $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" id=" actionBloc '+obj.firstChild.dataset.name+'"><span translate="no" id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span><img src="../img/icons/'+element+'.png" alt="..." class="icons"></div></div>');
+        var dataAdd = '';
+        if(element == 'forge'){dataAdd = 'data-toggle="modal" data-target="#forgeModal" data-whatever="@mdo"'}
+          $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" '+dataAdd+' id=" actionBloc '+obj.firstChild.dataset.name+'"><span translate="no" id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span><img src="../img/icons/'+element+'.png" alt="..." class="icons"></div></div>');
         });
         document.querySelectorAll('.actionBloc').forEach(element => {
           fadeIn(element);
