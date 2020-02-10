@@ -122,49 +122,71 @@ class Action{
       this.forge();
     if (this.action == 'unequip all item')
       this.unequipItems();
-    if (this.action == 'go')
+    if (this.action == 'goReady')
       this.goAction();
+    if (this.action == 'go')
+      this.prepareGoAction();
     if (this.action == 'Use item')
       this.useItems();
     if (this.action == 'Equip item')
       this.equipItems();
     if (this.action == 'Talk')
       this.talk();
+    if (this.action == 'Steal')
+      this.steal();
       
   }
 
+  prepareGoAction(){
+    if(this.to && this.by){
+      this.by.goTo = this.to;
+      this.AllRooms.sendAllClientInfoRoom(this.room,this.by.name+' prepare to go to place "'+this.to.name+'"');
+    }
+  }
+
   goAction(){
-    this.by.goToRoom(this.to,this.by);
+    if(this.by){
+      if(this.by.goTo != 0){
+        this.by.goToRoom(this.by.goTo,this.by);
+      }
+    }
   }
   taunt(taux){//like threaten
-    if(this.to.type == 2)
-      this.by.reputation -= taux;
-    if(this.to.type == 3)
-      this.by.agressivity += taux;
-    this.AllRooms.sendOneClientInfoRoom(this.room,'You taunt '+this.to.name,this.by);
-    if(this.to.type == 1)
-      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' try to taunt you ',this.to);
+    if(this.to && this.by){
+      if(this.to.type == 2)
+        this.by.reputation -= taux;
+      if(this.to.type == 3)
+        this.by.agressivity += taux;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You taunt '+this.to.name,this.by);
+      if(this.to.type == 1)
+        this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' try to taunt you ',this.to);
+    }
   }
 
   charm(taux){//like threaten
-    if(this.to.type == 2)
-      this.by.reputation += taux;
-    if(this.to.type == 3)
-      this.by.agressivity -= taux;
-    this.AllRooms.sendOneClientInfoRoom(this.room,'You charmed '+this.to.name,this.by);
-    if(this.to.type == 1)
-      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' try to charm you ',this.to);
+    if(this.to && this.by){
+      if(this.to.type == 2)
+        this.by.reputation += taux;
+      if(this.to.type == 3)
+        this.by.agressivity -= taux;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You charmed '+this.to.name,this.by);
+      if(this.to.type == 1)
+        this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' try to charm you ',this.to);
+    }
   }
 
   trade(){
-    if(this.to){
+    if(this.to && this.by){
       if(this.to.type == 2){//pnj
 
         var toItems = this.AllRooms.getItemsAleatoire(this.byItems);
         toItems.owner = this.by;
 
         this.by.items.push(toItems);
-        delete this.by.items[this.byItems];
+        this.by.items.forEach(item => {
+          if(item.name == this.byItems.name)
+            item = [];
+        });
         //this.AllRooms.sendRoom(this.by.room);
         this.AllRooms.sendOneClientInfoRoom(this.room,'You have traded '+this.byItems+' to '+this.to.name+' in return for '+toItems.name,this.by);
         this.AllRooms.sendAllClientRoom(this.room);
@@ -173,17 +195,41 @@ class Action{
   }
 
   give(){
-    this.byItems = new Items(this.AllRooms,this.byItems);
-    this.byItems.owner = this.to;
+    if(this.to && this.by){
+      this.byItems = new Items(this.AllRooms,this.byItems);
+      this.byItems.owner = this.to;
 
-    this.to.items.push(this.byItems);
-    delete this.by.items[this.byItems];
-    this.by.nbrItems -= 1;
-    this.AllRooms.sendOneClientInfoRoom(this.room,'You have gived '+this.byItems.name+' to '+this.to.name,this.by);
-    if(this.to.type == 1)
-      this.AllRooms.sendOneClientInfoRoom(this.room,'You have received '+this.toItems.name+' by '+this.to.name,this.to);
-    //penser a retirer l'objet côter client
+      this.to.items.push(this.byItems);
+      this.by.items.forEach(item => {
+        if(item.name == this.byItems.name)
+          item = [];
+      });
+      this.by.nbrItems -= 1;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have gived '+this.byItems.name+' to '+this.to.name,this.by);
+      if(this.to.type == 1)
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You have received '+this.toItems.name+' by '+this.to.name,this.to);
+      //penser a retirer l'objet côter client
+    }
   }
+
+  steal(){
+    /*if(this.to && this.by){
+      this.byItems = new Items(this.AllRooms,this.byItems);
+      this.byItems.owner = this.to;
+
+      this.to.items.push(this.byItems);
+      this.by.items.forEach(item => {
+        if(item.name == this.byItems.name)
+          item = [];
+      });
+      this.by.nbrItems -= 1;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have gived '+this.byItems.name+' to '+this.to.name,this.by);
+      if(this.to.type == 1)
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You have received '+this.toItems.name+' by '+this.to.name,this.to);
+      //penser a retirer l'objet côter client
+    }*/
+  }
+
   byItemEquipedStats(){
     if(this.by){
       if (this.by.itemEquip1){
@@ -208,6 +254,11 @@ class Action{
         this.charmeEquipedBy += this.by.itemEquip3.charme;
       }
     }
+    if (this.hpEquipedBy< 0 || isNaN(this.hpEquipedBy)) {this.hpEquipedBy=0;}
+    if (this.forceEquipedBy< 0 || isNaN(this.forceEquipedBy)) {this.forceEquipedBy=0;}
+    if (this.dextEquipedBy< 0 || isNaN(this.dextEquipedBy)) {this.dextEquipedBy=0;}
+    if (this.chanceEquipedBy< 0 || isNaN(this.chanceEquipedBy)) {this.chanceEquipedBy=0;}
+    if (this.charmeEquipedBy< 0 || isNaN(this.charmeEquipedBy)) {this.charmeEquipedBy=0;}
   }
   toItemEquipedStats(){
     if(this.to){
@@ -233,15 +284,25 @@ class Action{
         this.charmeEquipedTo += this.to.itemEquip3.charme;
       }
     }
+    if (this.hpEquipedTo< 0 || isNaN(this.hpEquipedTo)) {this.hpEquipedTo=0;}
+    if (this.forceEquipedTo< 0 || isNaN(this.forceEquipedTo)) {this.forceEquipedTo=0;}
+    if (this.dextEquipedTo< 0 || isNaN(this.dextEquipedTo)) {this.dextEquipedTo=0;}
+    if (this.chanceEquipedTo< 0 || isNaN(this.chanceEquipedTo)) {this.chanceEquipedTo=0;}
+    if (this.charmeEquipedTo< 0 || isNaN(this.charmeEquipedTo)) {this.charmeEquipedTo=0;}
   }
 
   attack(){
     if (this.to && this.by){
       this.byItemEquipedStats();
       this.toItemEquipedStats();
-      if ((this.by.dext+this.dextEquipedBy+this.chanceEquipedBy)*(Math.random()*10) > (this.to.dext+this.dextEquipedTo+this.chanceEquipedTo)*(Math.random()*10)){
+      if ((this.by.dext+this.dextEquipedBy+this.chanceEquipedBy)*(Math.random()*100) > (this.to.dext+this.dextEquipedTo+this.chanceEquipedTo)*(Math.random()*100)){
         this.to.hp -= this.by.force+this.forceEquipedBy;
+        if (this.to.type == 1 && this.to.goTo != 0){
+          this.to.goTo = 0;
+          this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' forced you to stay in these place ',this.to);
+        }
         if (this.to.hp <= 0){
+          this.by.addExp(this.to.level);
           this.by.addItems(this.AllRooms.getItemsAleatoire(this.to.level,this.by));
           if (this.to.type == 1){
             this.to.die();
@@ -263,7 +324,7 @@ class Action{
               }
             }
           }
-          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+' at '+nameCible+' and your target was defeated',this.by);
+          this.AllRooms.sendOneClientInfoRoom(this.room,'Successful attack, you subtracts '+this.by.force+this.forceEquipedBy+' at '+nameCible+' and your target was defeated',this.by);
           this.AllRooms.sendAllClientRoom(this.room);
           this.AllRooms.sendAllClientInfoRoom(this.room,this.by.name+' has eliminated '+nameCible);
         }else{
@@ -285,10 +346,10 @@ class Action{
 
 
   skill(skill){
-    if (this.to){
+    if (this.to && this.by && skill){
       this.byItemEquipedStats();
       this.toItemEquipedStats();
-      if ((this.by.dext+this.dextEquipedBy+this.chanceEquipedBy)*(Math.random()*10) > (this.to.dext+this.dextEquipedTo+this.chanceEquipedTo)*(Math.random()*10)){
+      if ((this.by.dext+this.dextEquipedBy+this.chanceEquipedBy)*(Math.random()*100) > (this.to.dext+this.dextEquipedTo+this.chanceEquipedTo)*(Math.random()*100)){
         this.to.hp += skill.hp;
         this.to.dext += skill.dext;
         this.to.force += skill.force;
@@ -339,34 +400,42 @@ class Action{
   }
 
   watch(){
-    this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' :<p> Strength : '+this.to.force+'</p><p> Dexterity : '+this.to.dext+'</p><p> Luck : '+this.to.chance+'</p><p> Charm : '+this.to.charme+'</p><p> Level : '+this.to.level+'</p>',this.by) ;
-    /*if (this.to.description != ''){
-      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by) ;
-    }else{console.log('test');
-      this.AllRooms.sendOneClientInfoRoom(this.room,'Nothing to watch',this.by);
-    }*/
+    if(this.to && this.by){
+      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' :<p> Strength : '+this.to.force+'</p><p> Dexterity : '+this.to.dext+'</p><p> Luck : '+this.to.chance+'</p><p> Charm : '+this.to.charme+'</p><p> Level : '+this.to.level+'</p>',this.by) ;
+      /*if (this.to.description != ''){
+        this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by) ;
+      }else{console.log('test');
+        this.AllRooms.sendOneClientInfoRoom(this.room,'Nothing to watch',this.by);
+      }*/
+    }
   }
 
   describe(){
-    this.to.description = this.byItems;
-    this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by);
+    if(this.to && this.by){
+      this.to.description = this.byItems;
+      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by);
+    }
   }
 
   forge(){
-    if (!this.AllRooms.savedNameItems.includes(this.itemName)){
-      new Items(this.AllRooms,this.itemName,this.itemHp,this.itemForce,this.itemDext,this.itemChance,this.itemCharme,this.itemTime,this.itemType,this.by);
-      this.AllRooms.sendOneClientInfoRoom(this.room,'You have created '+this.itemName,this.by);
-      this.AllRooms.sendOneClientRoom(this.room,this.by);
+    if(this.by){
+      if (!this.AllRooms.savedNameItems.includes(this.itemName)){
+        new Items(this.AllRooms,this.itemName,this.itemHp,this.itemForce,this.itemDext,this.itemChance,this.itemCharme,this.itemTime,this.itemType,this.by);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You have created '+this.itemName,this.by);
+        this.AllRooms.sendOneClientRoom(this.room,this.by);
+      }
     }
   }
 
   talk(){
-    if(this.to.type == 2){
-      fs.readFile('dialogue.json', (err, data) => {
-        if (err) throw err;
-        var student = JSON.parse(data);
-        this.AllRooms.sendOneClientInfoRoom(this.room,student[entierAleatoire(0,student.length)],this.by);
-      });
+    if(this.to && this.by){
+      if(this.to.type == 2){
+        fs.readFile('dialogue.json', (err, data) => {
+          if (err) throw err;
+          var student = JSON.parse(data);
+          this.AllRooms.sendOneClientInfoRoom(this.room,student[entierAleatoire(0,student.length)],this.by);
+        });
+      }
     }
   }
 
@@ -379,48 +448,55 @@ class Action{
   }*/
 
   useItems(){
-    if(this.byItems.type == 1){
-      this.to.hp += this.byItems.hp;
-      this.to.force += this.byItems.force;
-      this.to.dext += this.byItems.dext;
-      this.to.chance += this.byItems.chance;
-      this.to.charme += this.byItems.charme;
-      this.to.timeConso += this.time;
-      this.to.dateLastConso = Date.now();
-      this.by.items.forEach(item => {
-        if(item.hp == this.byItems.hp && item.force == this.byItems.force && item.dext == this.byItems.dext && item.chance == this.byItems.chance && item.charme == this.byItems.charme )
-        console.log(item)
-          //delete item;
-      });
-      this.AllRooms.sendOneClientRoom(this.room,this.by);
+    if(this.to && this.by){
+      if(this.byItems.type == 1){
+        this.to.hp += this.byItems.hp;
+        this.to.force += this.byItems.force;
+        this.to.dext += this.byItems.dext;
+        this.to.chance += this.byItems.chance;
+        this.to.charme += this.byItems.charme;
+        this.to.timeConso += this.time;
+        this.to.dateLastConso = Date.now();
+        this.by.items.forEach(item => {
+          if(item.hp == this.byItems.hp && item.force == this.byItems.force && item.dext == this.byItems.dext && item.chance == this.byItems.chance && item.charme == this.byItems.charme )
+            item = [];
+            //delete item;
+        });
+        this.AllRooms.sendOneClientRoom(this.room,this.by);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You use '+this.byItems.name,this.by);
+      }
     }
   }
 
   equipItems(){
-    if(this.byItems.type == 2){
-      if(this.by.itemEquip1){
-        this.by.itemEquip1 = this.byItems;
-      }else if(this.by.itemEquip2){
-        this.by.itemEquip2 = this.byItems;
-      }else if(this.by.itemEquip3){
-        this.by.itemEquip3 = this.byItems;
+    if(this.by){
+      if(this.byItems.type == 2){
+        if(this.by.itemEquip1){
+          this.by.itemEquip1 = this.byItems;
+        }else if(this.by.itemEquip2){
+          this.by.itemEquip2 = this.byItems;
+        }else if(this.by.itemEquip3){
+          this.by.itemEquip3 = this.byItems;
+        }
+        this.AllRooms.sendOneClientRoom(this.room,this.by);
       }
-      this.AllRooms.sendOneClientRoom(this.room,this.by);
     }
   }
 
   unequipItems(){
-    if(this.byItems.type == 2){
-      if(this.by.itemEquip1 && this.by.itemEquip1 == this.byItems){
-        this.by.itemEquip1 = [];
+    if(this.by){
+      if(this.byItems.type == 2){
+        if(this.by.itemEquip1 && this.by.itemEquip1 == this.byItems){
+          this.by.itemEquip1 = [];
+        }
+        if(this.by.itemEquip2 && this.by.itemEquip2 == this.byItems){
+          this.by.itemEquip2 = [];
+        }
+        if(this.by.itemEquip3 && this.by.itemEquip3 == this.byItems){
+          this.by.itemEquip3 = [];
+        }
+        this.AllRooms.sendOneClientRoom(this.room,this.by);
       }
-      if(this.by.itemEquip2 && this.by.itemEquip2 == this.byItems){
-        this.by.itemEquip2 = [];
-      }
-      if(this.by.itemEquip3 && this.by.itemEquip3 == this.byItems){
-        this.by.itemEquip3 = [];
-      }
-      this.AllRooms.sendOneClientRoom(this.room,this.by);
     }
   }
 }

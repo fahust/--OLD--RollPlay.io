@@ -174,6 +174,7 @@
       var objInRoom = [];
       var cibleName = '';
       var loadSpinner = 0;
+      var timeChangedRoom = 0;
 
 
       function entierAleatoire(min, max)
@@ -214,6 +215,7 @@
           action[7] = 'threaten';
           action[8] = 'glorified';
           action[9] = 'watch';
+          action[10] = 'talk';
         }
             
         if (type == 3) {//enemy
@@ -255,8 +257,9 @@
               if (element.firstChild.innerHTML == 'inventory' ){//liste des items du joueur
                 $( ".actionBloc" ).effect("fade",500,function(){//bounce//explode//slide//Highlight//pulsate//shake
                   $( this ).remove();
+                  $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                   itemsClient.forEach(item => {
-                    $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span translate="no" id="obj" data-inventory="true" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                   });
                   clickAction()
                 });
@@ -267,7 +270,7 @@
                   $( ".actionBloc" ).effect("fade",500,function(){
                     $( this ).remove();
                     itemsClient.forEach(item => {
-                      $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                      $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span translate="no" id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                     });
                     clickAction()
                   });
@@ -278,8 +281,8 @@
                   cibleName = toItem ;
                   $( ".actionBloc" ).effect("fade",500,function(){
                     $( this ).remove();
-                    $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Use Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
-                    $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span id="obj" data-item="'+nameItem+'">Equip Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span translate="no" id="obj" data-item="'+nameItem+'">Use Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    $(".action").append( '<div class="chatContainer actionBloc" id="'+nameItem+'"><span translate="no" id="obj" data-item="'+nameItem+'">Equip Item</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                     clickAction()
                     });
                 }else if (element.firstChild.dataset.action){//envoi trade et give
@@ -293,6 +296,12 @@
                     clickAction();
                   }, 3000);
                 }else{//envoi des autres actions
+                  if(element.firstChild.innerHTML == 'go'){
+                    timeChangedRoom = setTimeout(() => {
+                      var msg = {"action":'goReady', "by":nameClient}; 
+                      socket.emit('action', JSON.stringify(msg));
+                    }, 5000);
+                  }
                   var allAction = '';
                   var msg = {"action":element.firstChild.innerHTML, "room":roomClient, "by":nameClient, "to":element.firstChild.dataset.name, "byItems":element.firstChild.dataset.item, "toItems":''};
                   if(msg != [])
@@ -345,7 +354,7 @@
     function clickObjEffect(obj,action){
       $( ".actionBloc" ).remove();
       action.forEach(element => {  
-          $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" id=" actionBloc '+obj.firstChild.dataset.name+'"><span id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span><img src="../img/icons/'+element+'.png" alt="..." class="icons"></div></div>');
+          $(".action").append( '<div class="chatContainer actionBloc" style="opacity: 0;" id=" actionBloc '+obj.firstChild.dataset.name+'"><span translate="no" id="obj" data-name="'+obj.firstChild.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span><img src="../img/icons/'+element+'.png" alt="..." class="icons"></div></div>');
         });
         document.querySelectorAll('.actionBloc').forEach(element => {
           fadeIn(element);
@@ -379,7 +388,7 @@
             var allAction = '';
             $( ".actionBloc" ).remove();
               action.forEach(element => {
-                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span id="obj" data-name="'+obj.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                $(".action").append( '<div class="chatContainer actionBloc" id="'+obj.dataset.name+'"><span translate="no" id="obj" data-name="'+obj.dataset.name+'">'+element+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
               });
               clickAction();
             }
@@ -393,7 +402,7 @@
             var allItems = '';
             document.querySelector('.action').innerhtml = "";
             items.forEach(item => {
-              allItems = allItems+'<div class="chatContainer itemBloc" id="'+item.id+'"><span id="obj" data-id="'+item.id+'">'+item.info+'</span></div></div>'
+              allItems = allItems+'<div class="chatContainer itemBloc" id="'+item.id+'"><span translate="no" id="obj" data-id="'+item.id+'">'+item.info+'</span></div></div>'
             });
             document.querySelector('.action').innerhtml = allItems;
           }
@@ -403,7 +412,7 @@
       socket.on("action", function(msg) {
         msg.action
       });
-      socket.on("allObj", function(msg) {
+      socket.on("allObj", function(msg) {console.log(msg);
         $("button").remove();
         var allObj = '';
         if($( ".objBloc" ).length > 0 ){
@@ -431,6 +440,7 @@
             }
             element.type = 0;
             itemsClient = [];
+            //console.log(itemsClient);
             itemsClient = element.items;
           }
           color = '#625550';
@@ -438,14 +448,15 @@
           if(element.type == 4){element.image = 'build';imageFolder = 'objspot/'}
           if(element.type == 5){element.image = 'forge';imageFolder = 'objspot/'}
           if(element.type == 6){element.image = 'alchemy';imageFolder = 'objspot/'}
-          $( ".obj" ).append( '<li class="chatContainer objBloc ui-state-default" style="color:'+color+'" id ="'+element.name+'"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../img/'+imageFolder+element.image.toString().replace("'", "")+'.jpg" alt="..." class="img-thumbnail"></span></div></li>' );
+          if(element.type == 1 || element.type == 0){imageFolder = 'pnj/'}
+          $( ".obj" ).append( '<li class="chatContainer objBloc ui-state-default" style="color:'+color+'" id ="'+element.name+'"><span translate="no" id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"><img src="../img/'+imageFolder+element.image.toString().replace("'", "")+'.jpg" alt="..." class="img-thumbnail"></span></div></li>' );
         });
         $( "#sortable" ).sortable();
         $( "#sortable" ).disableSelection();
         clickObj();
       }
       socket.on("oneObj", function(msg) {
-        document.querySelector('#'+msg.id).innerhtml = '<div class="chatContainer objBloc"><span id="obj" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"></span></div></div>';
+        document.querySelector('#'+msg.id).innerhtml = '<div class="chatContainer objBloc"><span id="obj" translate="no" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span><span class="time-right"></span></div></div>';
         clickObj();
       });
 
@@ -458,13 +469,17 @@
             res = msg.replace(element.name,'<span id="objdial" style="color:'+color+'" data-type="'+element.type+'" data-name="'+element.name+'">'+element.name+'</span>');
           }
         });
-        $( ".chat" ).append( '<div class="chatContainer chatContainerDiv"><span id="obj" data-type="'+'">'+res+'</span><span class="time-right"></span></div></div>' );
+        $( ".chat" ).append( '<div class="chatContainer chatContainerDiv"><span translate="no" id="obj" data-type="'+'">'+res+'</span><span class="time-right"></span></div></div>' );
           //fadeIn(element);
           //$(".actionBloc").effect("slide")
           clickObjDial();
           var wtf    = $('.chat');
           var height = wtf[0].scrollHeight;
           wtf.scrollTop(height);
+
+          if(msg.includes('forced you to stay in these place')){
+            clearTimeout(myVar);
+          }
 
           if(msg.includes('dodge')){
             $( ".chatContainerDiv" ).last().effect("bounce",500,function(){//bounce//explode//slide//Highlight//pulsate//shake

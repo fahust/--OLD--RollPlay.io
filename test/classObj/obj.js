@@ -8,7 +8,7 @@ function entierAleatoire(min, max)
 
 class Obj{
     //0 = me ,1 = user, 2 = pnj, 3 = enemy, 4 = build, 5 = forge, 6 = alchimie , 7 = door
-  constructor(AllRooms,type,hp,hpmax,force,forcemax,dext,dextmax,chance,chancemax,charme,charmemax,reputation,level,name,id,room,password,agressivity,image = 1) {
+  constructor(AllRooms,type,hp,hpmax,force,forcemax,dext,dextmax,chance,chancemax,charme,charmemax,reputation,level,name,id,room,password,agressivity,image = 1,exp = 0) {
     this.AllRooms = AllRooms;
     this.type = type;
     this.name = name;
@@ -29,6 +29,7 @@ class Obj{
     this.reputation = reputation;
     
     this.level = level;
+    this.exp = exp;
     
     this.timeaction = 3000;
 
@@ -41,6 +42,7 @@ class Obj{
     this.ressource;
 
     this.image = image;
+    this.goTo = 0;
     
     this.idcrea;
     this.socket = [];
@@ -52,6 +54,32 @@ class Obj{
     this.itemEquip2;
     this.itemEquip3;
     this.monsterAttack();
+  }
+
+  addExp(exp){
+    this.exp += exp;
+    if(this.exp > (10*(this.level*this.level))){
+      this.exp = 0;
+      this.level += 1;
+      gainHp = entierAleatoire(1,this.level);
+      gainForce = entierAleatoire(1,this.level);
+      gainDext = entierAleatoire(1,this.level);
+      gainChance = entierAleatoire(1,this.level);
+      gainCharme = entierAleatoire(1,this.level);
+      this.hpmax += gainHp;
+      this.hp = this.hpmax;
+      this.forcemax += gainForce;
+      this.force = this.forcemax;
+      this.dextmax += gainDext;
+      this.dext = this.dextmax;
+      this.chancemax += gainChance;
+      this.chance = this.chancemax;
+      this.charmemax += gainCharme;
+      this.charme = this.charmemax;
+      this.timeConso = 0;
+      this.dateLastConso = 0;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'<p>You level up</p><p>Life Gain : +</p>'+gainHp+'<p>Strength Gain : +</p>'+gainForce+'<p>Dexterity Gain : +</p>'+gainDext+'<p>Lucky Gain : +</p>'+gainChance+'<p>Charm Gain : +</p>'+gainCharme,this.by);
+    }
   }
 
   monsterAttack(){//console.log('test');
@@ -122,6 +150,7 @@ class Obj{
         if(room.name == this.AllRooms.roomArray[i3].name)
           this.AllRooms.roomArray[i3].object.push(this);
       }
+      this.goTo = 0;
       this.AllRooms.sendAllClientRoom(room.name);
     }
   }
