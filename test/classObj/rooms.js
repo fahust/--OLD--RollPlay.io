@@ -36,14 +36,16 @@ class AllRoom{
   loadRoomByFile(file){
     file.forEach(user => {
       var varobj = Object.assign(new Obj(this),user);
+      var varItems = [];
       user.items.forEach(item => {
         var varitem = Object.assign(new Items(this),item);
-        varobj.items.push(varitem);
-      })
+        varItems.push(varitem);
+      });
+      varobj.items = varItems;
       this.roomArray.forEach(room => {
         if(room.name == varobj.room)
         room.object.push(varobj);
-      })
+      });
       this.users.push(varobj);
     })
 
@@ -113,31 +115,22 @@ class AllRoom{
   connectUser(msg,socket){
     var exist;
     exist = 0;
-    //console.log(this.users)
-    //console.log(this.users[0].name,msg.name);
     this.users.forEach(user => {
       if (user.name == msg.name && user.socket.connected != true){
         if (user.password == msg.password){
           exist = 1;
           var varObj = Object.assign(new Obj(this),user);
-          //delete user;
-          //console.log(socket);
           delete varObj.socket;
           varObj.socket = socket;
-          //delete varObj.AllRooms;
           varObj.AllRooms = this;
-          //varObj.__proto__.socket = socket;
           socket.user = varObj;
-          //console.log(varObj.room);
-          //socket.user = user;
           this.roomArray.forEach(room => {
-            if(room.name == varObj.room){//console.log(varObj.room);
+            if(room.name == varObj.room){
               room.object.push(varObj);
             }
           })
           this.sendAllClientRoom(varObj.room);
           this.sendAllClientInfoRoom(varObj.room,varObj.name+' is connected');
-          //this.users.push(varObj);
           return 1;
         }
       }
@@ -184,7 +177,7 @@ class AllRoom{
   }
   createMonsterOrPnj(room){
     this.roomArray.forEach(element => {
-      if(element.name == room && entierAleatoire(1,10) == 5){
+      if(element.name == room && entierAleatoire(1,25) == 5){
         if(element.danger > 0){
           var tempObj = new Obj(this,3,entierAleatoire(10,10*element.danger),entierAleatoire(10,10*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),0,entierAleatoire(1,1*element.danger),this.getNammeAtLoad(),Date.now(),room,element.name,entierAleatoire(1,20),entierAleatoire(1,11));
           element.object.push(tempObj);
@@ -230,9 +223,9 @@ class AllRoom{
       for (let i2 = 0; i2 < type; i2++) {//if(name == 'port'){console.log(i,type,i2);}
         this.generateStats(i);
         if(i == 2){
-          var image = entierAleatoire(1,37)
+          var image = entierAleatoire(1,37);
         }else if(i == 3){
-          var image = entierAleatoire(1,11)
+          var image = entierAleatoire(1,11);
         }
         var varName;
         if(i == 4){varName = 'build'}else if(i == 5){varName = 'forge'}else if(i == 6){varName = 'alchemy'}else{varName = this.getNammeAtLoad()}
@@ -273,38 +266,6 @@ class AllRoom{
   }
 
   deleteStatsUselessForSend(varObj){
-    /*varObj.id = [];
-    varObj.password = [];
-    varObj.agressivity = [];
-
-    varObj.hp = [];
-    varObj.hpmax = [];
-    varObj.force = [];
-    varObj.forcemax = [];
-    varObj.dext = [];
-    varObj.dextmax = [];
-    varObj.chance = [];
-    varObj.chancemax = [];
-    varObj.charme = [];
-    varObj.charmemax = [];
-    varObj.reputation = [];
-            
-    varObj.level = [];
-            
-    varObj.timeaction = [];
-
-    varObj.action = [];
-    varObj.nbrItems = [];//persistant
-    varObj.idcrea = [];
-    //varObj.room;
-    varObj.description = [];
-    varObj.cible = [];
-    
-
-    varObj.AllRooms = [];//supression des obj pour le send
-    varObj.socket = [];//supression des socket
-    
-    */
     delete varObj.id;
     delete varObj.password;
     delete varObj.agressivity;
@@ -328,7 +289,6 @@ class AllRoom{
     delete varObj.action ;
     delete varObj.nbrItems ;//persistant
     delete varObj.idcrea;
-    //varObj.room;
     delete varObj.description;
     delete varObj.cible;
     
@@ -347,16 +307,15 @@ class AllRoom{
           if (obj.type == 1 && obj.socket.connected == false){}else{
             var varObj = Object.assign(new Obj(this),obj);
             if (obj.type == 1 || obj.type == 0){
-              //var varItems = [];
+              var varItems = [];
               varObj.items.forEach(item => {
-                /*var varItem = Object.assign(new Items(this),item);
-                varItem.AllRooms = [];
-                varItem.owner = [];
-                varItems.push(varItem);*/
-                item.AllRooms = [];
-                item.owner = [];
+                if(!Array.isArray(item)){
+                  item.AllRooms = [];
+                  item.owner = [];
+                  varItems.push(item);
+                }
               });
-              //varObj.items = varItems;
+              varObj.items = varItems;
               if(varObj.itemEquip1){
                 varObj.itemEquip1.AllRooms = [];
                 varObj.itemEquip1.owner = [];
@@ -388,43 +347,11 @@ class AllRoom{
         });
         element.object.forEach(client => {
           if(client.type == 1 && client.socket.connected == true){
-            client.socket.emit('allObj', objToSend);
+            client.socket.emit('allObj', objToSend);//console.log(client.name);
           }
         });
       }
     });
-    /*this.roomArray.forEach(element => {
-      if (element.name == roomName){var roomNow = element;
-        element.object.forEach(client => {
-            if(client.type == 1 && client.socket.connected == true){
-            var objToSend = [];
-            roomNow.object.forEach(obj => {//console.log(obj.name);
-                //console.log(obj);
-                    this.actualizeObj(obj);
-                    if (obj.type == 1 && obj.socket.connected == false){}else{
-                    var varObj = Object.assign(new Obj(this),obj);
-                    if (client == obj)
-                        varObj.type = 0;
-                    if (obj.type == 1 || obj.type ==0){
-                        varObj.items.forEach(item => {
-                        item.AllRooms = [];
-                        item.owner = [];
-                        });
-                    }else{
-                        varObj.itemEquip1 = [];
-                        varObj.itemEquip2 = [];
-                        varObj.itemEquip3 = [];
-                        varObj.items = [];
-                    }
-                    varObj = this.deleteStatsUselessForSend(varObj);
-                    objToSend.push(varObj);
-                    }
-            });//console.log(client.socket);
-            client.socket.emit('allObj', objToSend);
-            }
-        });
-    }
-    });*/
   }
   /** send message at all client in the room of client's action launch */
   sendAllClientInfoRoom(roomName,message){//envoi juste une nouvelle info dans le chat, pour éviter la perte de perf a devoir tout envoyé a chaque fois, rajouter un petit timeout dessus
