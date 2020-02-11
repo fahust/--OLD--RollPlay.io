@@ -1,5 +1,6 @@
 
 const Action = require('./action.js');
+const Jobs = require('./job.js');
 
 function entierAleatoire(min, max)
 {
@@ -40,6 +41,12 @@ class Obj{
     this.dateLastConso = 0;
     this.dateLastAttack = Date.now();
     this.ressource;
+    this.guild;
+    if(this.type == 1){
+      this.job = new Jobs();
+    }else{
+      this.job = [];
+    }
 
     this.image = image;
     this.goTo = 0;
@@ -61,11 +68,11 @@ class Obj{
     if(this.exp > (10*(this.level*this.level))){
       this.exp = 0;
       this.level += 1;
-      gainHp = entierAleatoire(1,this.level);
-      gainForce = entierAleatoire(1,this.level);
-      gainDext = entierAleatoire(1,this.level);
-      gainChance = entierAleatoire(1,this.level);
-      gainCharme = entierAleatoire(1,this.level);
+      var gainHp = entierAleatoire(1,this.level);
+      var gainForce = entierAleatoire(1,this.level);
+      var gainDext = entierAleatoire(1,this.level);
+      var gainChance = entierAleatoire(1,this.level);
+      var gainCharme = entierAleatoire(1,this.level);
       this.hpmax += gainHp;
       this.hp = this.hpmax;
       this.forcemax += gainForce;
@@ -80,6 +87,19 @@ class Obj{
       this.dateLastConso = 0;
       this.AllRooms.sendOneClientInfoRoom(this.room,'<p>You level up</p><p>Life Gain : +</p>'+gainHp+'<p>Strength Gain : +</p>'+gainForce+'<p>Dexterity Gain : +</p>'+gainDext+'<p>Lucky Gain : +</p>'+gainChance+'<p>Charm Gain : +</p>'+gainCharme,this.by);
     }
+  }
+
+  addLevelJob(nameJob){
+    if(this.by.job.jobNow == nameJob){
+      if(this.by.job.jobs[nameJob] === undefined){
+        this.by.job.jobs[nameJob] = 1;
+      }else{
+        this.by.job.jobs[nameJob] += 1;
+      }
+      this.by.job.jobLvlNow = this.by.job.jobs[nameJob]
+      return 1+(this.by.job.jobLvlNow/10);
+    }
+    return 1;
   }
 
   monsterAttack(){//console.log('test');
@@ -108,16 +128,16 @@ class Obj{
       }
     }
     if ((this.type == 2 || this.type == 3) && Date.now()-this.dateLastAttack > this.timeaction){
-    this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
-    var action = [];
-    this.dateLastAttack = Date.now();
-    action.action = 'attack';
-    action.by = this;
-    action.to = this.cible;
-    action.byItems = [];
-    action.toItems = [];
-    action.room = this.room;//name room
-    var actionEvent = new Action(this.AllRooms,action);
+      this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
+      var action = [];
+      this.dateLastAttack = Date.now();
+      action.action = 'attack';
+      action.by = this;
+      action.to = this.cible;
+      action.byItems = [];
+      action.toItems = [];
+      action.room = this.room;//name room
+      var actionEvent = new Action(this.AllRooms,action);
     }
     
   }
@@ -147,8 +167,13 @@ class Obj{
       user.room = room.name;
       this.AllRooms.sendAllClientRoom(cachedRoom);
       for (var i3 = 0, len3 = this.AllRooms.roomArray.length; i3 < len3; i3++) {
-        if(room.name == this.AllRooms.roomArray[i3].name)
+        if(room.name == this.AllRooms.roomArray[i3].name){
           this.AllRooms.roomArray[i3].object.push(this);
+          if(this.guild != this.AllRooms.roomArray[i3].owner){
+            this.ressource -= 1;
+            this.AllRooms.sendOneClientInfoRoom(this.AllRooms.roomArray[i3].name,'You pay tax to '+this.AllRooms.roomArray[i3].owner,this);
+          }
+        }
       }
       this.goTo = 0;
       this.AllRooms.sendAllClientRoom(room.name);

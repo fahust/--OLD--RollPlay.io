@@ -21,6 +21,7 @@ class AllRoom{
     this.savedNameItems = [];
     this.savedNameMonsters = [];
     this.savedNamePnjs = [];
+    this.guilds = [];
     
     this.users = [];
     this.lastName;
@@ -44,10 +45,10 @@ class AllRoom{
       varobj.items = varItems;
       this.roomArray.forEach(room => {
         if(room.name == varobj.room)
-        room.object.push(varobj);
+          room.object.push(varobj);
       });
       this.users.push(varobj);
-    })
+    });
 
     /*this.users = file.users;
     this.roomArray.forEach(room => {
@@ -94,7 +95,7 @@ class AllRoom{
       user.items.forEach(item => {
         item.AllRooms = [];
       });
-    })
+    });
     /*this.savedItems.forEach(item => { 
       item.AllRooms = [];
     });
@@ -128,13 +129,13 @@ class AllRoom{
             if(room.name == varObj.room){
               room.object.push(varObj);
             }
-          })
+          });
           this.sendAllClientRoom(varObj.room);
           this.sendAllClientInfoRoom(varObj.room,varObj.name+' is connected');
           return 1;
         }
       }
-    })
+    });
     if(exist == 0 )
       this.creationAccount(msg,socket)
     /*for (var i = 0, len = this.users; i < len; i++) {
@@ -160,19 +161,19 @@ class AllRoom{
   }
 
   creationAccount(msg,socket){
-      console.log('create user')
-      var tempUser = new Obj(this,1,10,10,3,3,3,3,3,3,3,3,0,1,msg.name,Date.now(),'port',msg.password,0);
-      tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
-      tempUser.addItems(new Items(this,'consomable',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
-      tempUser.addItems(new Items(this,'persistant',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),2,tempUser.id));
-      tempUser.socket = socket;
-      tempUser.ressource = 100;
-      this.users.push(tempUser);
-      this.roomArray[0].object.push(tempUser);
-      socket.user = tempUser
-      this.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
-      this.sendAllClientRoom(socket.user.room);
-      return tempUser;
+    console.log('create user');
+    var tempUser = new Obj(this,1,10,10,3,3,3,3,3,3,3,3,0,1,msg.name,Date.now(),'port',msg.password,0);
+    tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
+    tempUser.addItems(new Items(this,'consomable',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
+    tempUser.addItems(new Items(this,'persistant',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),2,tempUser.id));
+    tempUser.socket = socket;
+    tempUser.ressource = 100;
+    this.users.push(tempUser);
+    this.roomArray[0].object.push(tempUser);
+    socket.user = tempUser;
+    this.sendAllClientInfoRoom(socket.user.room,socket.user.name+' is connected');
+    this.sendAllClientRoom(socket.user.room);
+    return tempUser;
     
   }
   createMonsterOrPnj(room){

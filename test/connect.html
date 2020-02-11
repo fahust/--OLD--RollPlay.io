@@ -170,6 +170,9 @@
       var i = 0;
       var nameClient = '';
       var roomClient = '';
+      var guildClient = '';
+      var typeClient = '';
+      var jobClient = '';
       var itemsClient = [];
       var objInRoom = [];
       var cibleName = '';
@@ -190,8 +193,10 @@
           action[2] = 'drop item';
           action[3] = 'equip item';
           action[3] = 'unequip all item';
-          action[4] = 'describe';
+          if(jobClient == 'Scribe')
+            action[4] = 'describe';
           action[5] = 'watch';
+          action[6] = 'Change job';
         }
 
         if (type == 1) {//user
@@ -203,19 +208,22 @@
           action[6] = 'threaten';
           action[7] = 'glorified';
           action[8] = 'watch';
+          if(jobClient == 'Scribe')
+            action[9] = 'describe';
         }
             
         if (type == 2) {//pnj
           action[1] = 'trade';
-          action[2] = 'attack';
-          action[3] = 'charm';
-          action[4] = 'taunt';
-          action[5] = 'skill';
-          action[6] = 'give';
-          action[7] = 'threaten';
-          action[8] = 'glorified';
-          action[9] = 'watch';
-          action[10] = 'talk';
+          action[2] = 'give';
+          action[3] = 'sell';
+          action[4] = 'attack';
+          action[5] = 'charm';
+          action[6] = 'taunt';
+          action[7] = 'skill';
+          action[8] = 'threaten';
+          action[9] = 'glorified';
+          action[10] = 'watch';
+          action[11] = 'talk';
         }
             
         if (type == 3) {//enemy
@@ -235,15 +243,21 @@
         }
 
         if (type == 5) {//forge
-          action[1] = 'forge';
+          if(jobClient == 'Blacksmith')
+            action[1] = 'forge';
         }
 
         if (type == 6) {//alchimie
-          action[1] = 'alchemy';
+          if(jobClient == 'Alchemist')
+            action[1] = 'alchemy';
         }
 
         if (type == 7) {//Door
           action[1] = 'go';
+          if(guildClient != '' && jobClient == 'scribe')
+            action[2] = 'Revandic';
+          if(jobClient == 'Scribe')
+            action[3] = 'describe';
         }
         return action;
       }
@@ -263,7 +277,7 @@
                   });
                   clickAction()
                 });
-              }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' ){//listes des items a trade
+              }else if (element.firstChild.innerHTML == 'give' || element.firstChild.innerHTML == 'trade' || element.firstChild.innerHTML == 'sell' ){//listes des items a trade
                   nameItem = element.firstChild.innerHTML;
                   toItem = element.firstChild.dataset.name;
                   cibleName = toItem ;
@@ -272,6 +286,19 @@
                   $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                     itemsClient.forEach(item => {
                       $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span translate="no" id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    });
+                    clickAction()
+                  });
+              }else if (element.firstChild.innerHTML == 'Change job'){//listes des items a trade
+                  nameItem = element.firstChild.innerHTML;
+                  toItem = element.firstChild.dataset.name;
+                  cibleName = toItem ;
+                  $( ".actionBloc" ).effect("fade",500,function(){
+                    $( this ).remove();
+                  $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
+                  jobs = ['Trader','Farmer','Armurier','Bounty hunter','Explorer','Bouffon','Cartographe','Charpentier','Diplomate','Blacksmith','Locksmith','Alchemist','Thief','Wizard','Scribe','Vilain','Dark Knight','Master of Vilain','Guardians','Knight','Master of guardians']
+                    jobs.forEach(job => {
+                      $(".action").append( '<div class="chatContainer actionBloc" id="'+job+'"><span translate="no" id="obj" data-to='+toItem+' data-job='+job+'  data-name="'+job+'">'+job+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                     });
                     clickAction()
                   });
@@ -291,8 +318,18 @@
                     clickAction()
                   }
                     });
-                }else if (element.firstChild.dataset.action){//envoi trade et give
+                  }else if (element.firstChild.dataset.action){//envoi trade et give et sell
                   var msg = {"action":element.firstChild.dataset.action, "room":roomClient, "by":nameClient, "to":cibleName, "byItems":element.firstChild.dataset.item, "toItems":''};
+                  if(msg != [])
+                    socket.emit('action', JSON.stringify(msg));
+                  document.querySelectorAll('.spinner-border').forEach(spinner => {
+                    spinner.style.display = "block";
+                  })
+                  setTimeout(() => {loadSpinner = 1;
+                    clickAction();
+                  }, 3000);
+                }else if (element.firstChild.dataset.job){//envoi job
+                  var msg = {"action":'Change job', "room":roomClient, "by":nameClient, "to":cibleName, "byItems":element.firstChild.dataset.job};
                   if(msg != [])
                     socket.emit('action', JSON.stringify(msg));
                   document.querySelectorAll('.spinner-border').forEach(spinner => {
@@ -442,6 +479,9 @@
               $( ".chatContainerDiv" ).effect("fade",500,function(){
           });
             roomClient = element.room;
+            guildClient = element.guild;
+            typeClient = element.type;
+            jobClient = element.job.jobNow;
             document.body.style.background = "#f3f3f3 url('../img/spot/"+roomClient.replace("'", "")+".jpg') no-repeat center";
             document.body.style.backgroundSize = "cover";
             document.body.style.backgroundAttachment = 'fixed';
