@@ -1,34 +1,19 @@
-# Patchwire
-Multiplayer game server framework for Node.js
+# Rollplay.io
+Multiplayer game with server in node.js and front in javascript/html5
 
 [![Build Status](https://travis-ci.org/twisterghost/patchwire.svg?branch=master)](https://travis-ci.org/twisterghost/patchwire)
 
 ## Install
-`npm install patchwire`
+`npm install Rollplay.io`
 
-## Use
+## Create Room
 ```JavaScript
-// MyGameServer.js
-const Server = require('patchwire').Server;
-const ClientManager = require('patchwire').ClientManager;
-
-const gameLobby = new ClientManager();
-gameLobby.on('clientAdded', function() {
-    gameLobby.broadcast('chat', {
-        message: 'A new player has joined the game.'
-    });
-});
-
-const server = new Server(function(client) {
-  gameLobby.addClient(client);
-});
-
-server.listen(3001);
+  var arrayDoor = [];
+  arrayDoor.push('tavern');
+  arrayDoor.push('adventurer\'s road');
+  AllRoomLoaded.createNewRoomDev(5,0,3,0,1,1,0,'port',arrayDoor);
 ```
 
-## Documentation
-
-See [the patchwire Github wiki](https://github.com/twisterghost/patchwire/wiki)
 
 ## About
 
@@ -48,8 +33,4 @@ Patchwire uses a paradigm of sending "commands" to clients, and in turn, listeni
 
 Patchwire is unassuming about the client side as it speaks primarily through JSON strings encoded over the wire. If you do not see your preferred client side below, creating your own client package is strongly encouraged, as Patchwire is built to be as easy as possible to implement. More client packages will come over time.
 
-### List of client packages:
-
-* [GameMaker: Studio](https://github.com/twisterghost/patchwire-gm)
-* [iOS](https://github.com/VictorBX/patchwire-ios)
 
