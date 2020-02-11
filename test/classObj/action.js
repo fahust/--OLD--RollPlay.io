@@ -1,5 +1,7 @@
 
 const Items = require('./items.js');
+const Guild = require('./guild.js');
+const fs = require('fs');
 
 function arrayRemove(arr, value) {
 
@@ -110,6 +112,8 @@ class Action{
       this.skill();
     if (this.action == 'give')
       this.give();
+    if (this.action == 'sell')
+      this.sell();
     if (this.action == 'threaten')
       this.taunt(2);
     if (this.action == 'glorified')
@@ -134,6 +138,17 @@ class Action{
       this.talk();
     if (this.action == 'Steal')
       this.steal();
+    if (this.action == 'Change job')
+      this.changeJob();
+    if (this.action == 'Revandic')
+      this.revandic();
+    if (this.action == 'Create guild')
+      this.createGuild();
+    if (this.action == 'Join guild')
+      this.joinGuild();
+    if (this.action == 'Quit guild')
+      this.quitGuild();
+      
       
   }
 
@@ -175,11 +190,28 @@ class Action{
     }
   }
 
+  sell(){
+    if(this.to && this.by){
+      var price;
+      this.by.items.forEach(item => {
+        if(item.name == this.byItems.name){
+          item = [];
+          price = item.level;
+        }
+      });
+      this.by.ressource += price;
+      this.by.nbrItems -= 1;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have sell '+this.byItems.name+' to '+this.to.name,this.by);
+      //penser a retirer l'objet côter client
+    }
+  }
+
   trade(){
     if(this.to && this.by){
       if(this.to.type == 2){//pnj
+        var bonus = this.by.addLevelJob('Trader');
 
-        var toItems = this.AllRooms.getItemsAleatoire(this.byItems);
+        var toItems = this.AllRooms.getItemsAleatoire(this.byItems+bonus);
         toItems.owner = this.by;
 
         this.by.items.push(toItems);
@@ -302,6 +334,13 @@ class Action{
           this.AllRooms.sendOneClientInfoRoom(this.room,this.by.name+' forced you to stay in these place ',this.to);
         }
         if (this.to.hp <= 0){
+          this.by.addLevelJob('Vilain');
+          this.by.addLevelJob('Dark knight');
+          this.by.addLevelJob('Master of vilain');
+          this.by.addLevelJob('Guardian');
+          this.by.addLevelJob('Knight');
+          this.by.addLevelJob('Master of guardians');
+          this.by.ressource += 1;
           this.by.addExp(this.to.level);
           this.by.addItems(this.AllRooms.getItemsAleatoire(this.to.level,this.by));
           if (this.to.type == 1){
@@ -401,7 +440,7 @@ class Action{
 
   watch(){
     if(this.to && this.by){
-      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' :<p> Strength : '+this.to.force+'</p><p> Dexterity : '+this.to.dext+'</p><p> Luck : '+this.to.chance+'</p><p> Charm : '+this.to.charme+'</p><p> Level : '+this.to.level+'</p>',this.by) ;
+      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' :<p> Strength : '+this.to.force+'</p><p> Dexterity : '+this.to.dext+'</p><p> Luck : '+this.to.chance+'</p><p> Charm : '+this.to.charme+'</p><p> Level : '+this.to.level+'</p><p> Job : '+this.to.job.jobNow+'</p>',this.by) ;
       /*if (this.to.description != ''){
         this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by) ;
       }else{console.log('test');
@@ -412,15 +451,74 @@ class Action{
 
   describe(){
     if(this.to && this.by){
+      this.AllRooms.roomArray.forEach(room => {
+        if(room.name == this.to.name){
+          room.description = this.byItems;
+        }
+      });
       this.to.description = this.byItems;
+      var bonus = this.by.addLevelJob('Scribe');
       this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by);
+    }
+  }
+
+  revandic(){
+    if(this.to && this.by){
+      this.AllRooms.roomArray.forEach(room => {
+        if(room.name == this.to.name){
+          room.owner = this.byItems;
+        }
+      });
+      this.AllRooms.sendAllClientInfoRoom(this.room,'Place now belongs to"'+this.to.byItems+'"');
+      //this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by);
+    }
+  }
+
+  createGuild(guildName){
+    var exist = false;
+    this.AllRooms.guilds.forEach(guild => {
+      if(guild.name == guildName)
+        exist = true;
+    });
+    if(exist == false){
+      var guild = new Guild(guildName);
+      this.AllRooms.guilds.push(guild);
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have created guild "'+guildName+'"',this.by);
+    }else{
+      this.AllRooms.sendOneClientInfoRoom(this.room,'Name guild already exist : "'+guildName+'"',this.by);
+    }
+  }
+
+  joinGuild(guildName){
+    if(this.by.guild == ''){
+      this.by.guild = guildName;
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have join guild "'+this.by.guild+'"',this.by);
+    }else{
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have already in guild "'+this.by.guild+'"',this.by);
+    }
+  }
+
+  quitGuild(){
+    if(this.by.guild != ''){
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You have quit guild "'+this.by.guild+'"',this.by);
+      this.by.guild = '';
+    }else{
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You haven\'t guild',this.by);
+    }
+  }
+
+  changeJob(jobName){
+    if(this.by.job.jobs[jobName]){
+      this.by.job.jobNow = jobName;
+      this.by.job.jobLvlNow = this.by.job.jobs[jobName];
     }
   }
 
   forge(){
     if(this.by){
       if (!this.AllRooms.savedNameItems.includes(this.itemName)){
-        new Items(this.AllRooms,this.itemName,this.itemHp,this.itemForce,this.itemDext,this.itemChance,this.itemCharme,this.itemTime,this.itemType,this.by);
+        var bonus = this.by.addLevelJob('Blacksmith');
+        new Items(this.AllRooms,this.itemName,this.itemHp*bonus,this.itemForce*bonus,this.itemDext*bonus,this.itemChance*bonus,this.itemCharme+bonus,this.itemTime*bonus,this.itemType,this.by);
         this.AllRooms.sendOneClientInfoRoom(this.room,'You have created '+this.itemName,this.by);
         this.AllRooms.sendOneClientRoom(this.room,this.by);
       }
