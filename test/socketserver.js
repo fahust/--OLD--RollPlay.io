@@ -21,15 +21,17 @@ var AllRoomLoaded = new AllRoom();
 
 //READ
 
-fs.readFile('student.json', (err, data) => {
+setTimeout(() => {
+fs.readFile('savedAllRooms.json', (err, savedAllRooms) => {
   if (err) throw err;
-  var student = JSON.parse(data);
-  AllRoomLoaded.loadRoomByFile(student);
-
-
+  savedAllRooms = JSON.parse(savedAllRooms);
+  //console.log(savedAllRooms.roomArray);
+  AllRoomLoaded.loadRoomByFile(savedAllRooms.users,savedAllRooms.roomArray,savedAllRooms.guilds,savedAllRooms.savedItems,savedAllRooms.savedNameItems);
 });
+}, 1000);
 
 
+/*
 fs.readFile('name.json', (err, data) => {
   if (err) throw err;
   var student = JSON.parse(data);
@@ -67,7 +69,7 @@ fs.readFile('name.json', (err, data) => {
   arrayDoor.push('adventurer\'s mountain');
   arrayDoor.push('mountain\'s cave');
   AllRoomLoaded.createNewRoomDev(0,4,0,6,1,1,3,'mountain\'s pic',arrayDoor);
-}); 
+}); */
 
 //setTimeout(() => {
 //}, 1000);
@@ -84,16 +86,28 @@ AllRoomLoaded.prepareToStringify();
   });
   */
   
-  function save(){
-    setInterval(() => {
-      AllRoomLoaded.prepareToStringify();
-      var data = JSON.stringify(AllRoomLoaded.users, null, 2);
-      fs.writeFile('student.json', JSON.minify(data), (err) => {
+function save(){
+  //Faire une save de la save
+  fs.readFile('savedAllRooms.json', (err, savedLastAllRooms) => {
+    if (err) throw err;
+    fs.writeFile('savedLastAllRooms.json', savedLastAllRooms, (err) => {
+      if (err) throw err;
+      var savedAllRooms = AllRoomLoaded.prepareToStringify();
+      var savedAllRoomsStringified = JSON.stringify(savedAllRooms, null, 2);
+      fs.writeFile('savedAllRooms.json', JSON.minify(savedAllRoomsStringified), (err) => {
         if (err) throw err;
+        console.log('Saved !');
       });
-    }, 100);
+
+    });
+  });
+
+  
 }
 
+setInterval(() => {
+  save();
+}, 100000);
 
 
 io.on('connection', (socket) => {console.log('client connected')

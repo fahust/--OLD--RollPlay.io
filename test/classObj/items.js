@@ -20,7 +20,7 @@ class Items{
     this.owner = owner;
     this.level = this.getLevelItems();
     this.savedItems();
-    this.AllRooms.addNameItems(name);
+    if (this.AllRooms) this.AllRooms.addNameItems(name);
   }
   /** check if ressource is bigger than level items forged */
   static forgeItems(by,items){
@@ -41,20 +41,22 @@ class Items{
   }
   /** Check if items exist, And add them if not exist */
   savedItems(){
-    var exist = false;
-    this.AllRooms.savedItems.forEach(element => {
-      if (element.name == this.name /*&& element.hp == this.hp && element.force == this.force && element.dext == this.dext && element.chance == this.chance && element.charme == this.charme && element.time == this.time && element.type == this.type*/){
-        exist = true;
+    if (this.AllRooms){
+      var exist = false;
+      this.AllRooms.savedItems.forEach(element => {
+        if (element.name == this.name /*&& element.hp == this.hp && element.force == this.force && element.dext == this.dext && element.chance == this.chance && element.charme == this.charme && element.time == this.time && element.type == this.type*/){
+          exist = true;
+        }
+      });
+      if (exist == false){
+        var cachedAllRooms = this.AllRooms;
+        var cachedOwner = this.owner;
+        this.AllRooms = [];
+        this.owner = [];
+        cachedAllRooms.savedItems.push(this);
+        this.AllRooms = cachedAllRooms;
+        this.owner = cachedOwner;
       }
-    });
-    if (exist == false){
-      var cachedAllRooms = this.AllRooms;
-      var cachedOwner = this.owner;
-      this.AllRooms = [];
-      this.owner = [];
-      cachedAllRooms.savedItems.push(this);
-      this.AllRooms = cachedAllRooms;
-      this.owner = cachedOwner;
     }
   }
   /** give name to object created by player */

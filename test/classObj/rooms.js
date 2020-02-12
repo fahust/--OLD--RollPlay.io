@@ -5,6 +5,7 @@ const Obj = require('./obj.js');
 const Items = require('./items.js');
 const Action = require('./action.js');
 const OneRoom = require('./oneRoom.js');
+const Guild = require('./guild.js');
 
 
 
@@ -34,8 +35,8 @@ class AllRoom{
     //this.name;
   }
   /** load data of server by file json */
-  loadRoomByFile(file){
-    file.forEach(user => {
+  loadRoomByFile(users,rooms,guilds,savedItems,savedNameItems){
+    users.forEach(user => {
       var varobj = Object.assign(new Obj(this),user);
       var varItems = [];
       user.items.forEach(item => {
@@ -50,33 +51,34 @@ class AllRoom{
       this.users.push(varobj);
     });
 
-    /*this.users = file.users;
-    this.roomArray.forEach(room => {
-      file.users.forEach(user => {
-        if (user.room == room.name){
-          obj = Object.assign(new Obj(this),obj);
-          room.object.push(obj);
-        }
-      })
-    })*/
 
-    /*this.roomArray = file.roomArray;
-    //this.allRoom = file.allRoom;
-    this.savedItems = file.savedItems;
-    this.savedNameItems = file.savedNameItems;
-    this.savedNameMonsters = file.savedNameMonsters;
-    this.roomArray.forEach(room => { //charger le owner dans les items ,supprimé en amont pour evité circular object pendant l'enregistrement
+    //A TESTER A FOND
+    rooms.forEach(room => {
+      var varRoom = Object.assign(new OneRoom(),room);
+      var varObject = [];
       room.object.forEach(obj => {
-        obj = Object.assign(new Obj(this),obj);
-        //obj.monsterAttack();//maybe to delete because launch up in new Obj
-        obj.items.forEach(item => {
-          item = Object.assign(new Items(this),item);
-          item.owner = obj;
-          //obj.nbrItems += 1;
-        });
+        var varObj = Object.assign(new Obj(this),obj);
+        varObject.push(varObj);
       });
-    });*/
+      varRoom.object = varObject;
+      this.roomArray.push(varRoom);
+    });
+
+    guilds.forEach(guild => {
+      var varGuild = Object.assign(new Guild(),guild);
+      this.guilds.push(varGuild);
+    });
+
+    savedItems.forEach(savedItem => {
+      var item = Object.assign(new Items(this),savedItem);
+      this.savedItems.push(item);
+    });
+
+    savedNameItems.forEach(savedNameItem => {
+      this.savedNameItems.push(savedNameItem);
+    });
   }
+
   addNammeAtLoad(name){
     this.savedNamePnjs.push(name);
   }
@@ -85,32 +87,64 @@ class AllRoom{
     return this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)];
   }
   /** prepare for save all server in json in file */
-  prepareToStringify(){
-    this.users.forEach(user => { 
-      user.AllRooms = [];//supression des obj pour le send
-      user.socket = [];//supression des socket
-      user.itemEquip1 = {};//supression des socket
-      user.itemEquip2 = {};//supression des socket
-      user.itemEquip3 = {};//supression des socket
+  prepareToStringify(){//users,rooms,guilds,savedItems,savedNameItems
+    
+    var savedAllRooms = Object.assign(new AllRoom(),this);
+    var cached = [];
+    //console.log(this);
+    savedAllRooms.users.forEach(user => {
+      var varUser = Object.assign(new Obj(),user);
+      varUser.AllRooms = [];//supression des obj pour le send
+      varUser.socket = [];//supression des socket
+      varUser.itemEquip1.AllRooms = [];
+      varUser.itemEquip2.AllRooms = [];
+      varUser.itemEquip3.AllRooms = [];
       user.items.forEach(item => {
-        item.AllRooms = [];
+        var varItem = Object.assign(new Items(),item);
+        varItem.AllRooms = [];
+        varUser.push(varItem);
       });
+      cached.push(varUser);
     });
-    /*this.savedItems.forEach(item => { 
-      item.AllRooms = [];
-    });
-    this.roomArray.forEach(element => { 
-      element.object.forEach(obj => {//mise en cache des obj de la room
-        obj.AllRooms = [];//supression des obj pour le send
-        obj.socket = [];//supression des socket
-        obj.itemEquip1 = {};//supression des socket
-        obj.itemEquip2 = {};//supression des socket
-        obj.itemEquip3 = {};//supression des socket
-        obj.items.forEach(item => {
-          item.AllRooms = [];
+    savedAllRooms.users = cached;
+
+    var cachedAllRoom = [];
+    savedAllRooms.roomArray.forEach(room => {
+      cached = [];
+      var varRoom = Object.assign(new OneRoom(),room);
+      varRoom.object.forEach(object => {
+        var varObject = Object.assign(new Obj(),object);
+        varObject.AllRooms = [];//supression des obj pour le send
+        varObject.socket = [];//supression des socket
+        if(varObject.itemEquip1) varObject.itemEquip1.AllRooms = [];
+        if(varObject.itemEquip2) varObject.itemEquip2.AllRooms = [];
+        if(varObject.itemEquip3) varObject.itemEquip3.AllRooms = [];
+        varObject.items.forEach(item => {
+          var varItem = Object.assign(new Items(),item);
+          varItem.AllRooms = [];
+          varItem.owner = varObject.name;
+          varObject.items.push(varItem);
         });
+        varObject.items = [];//pour éviter BUGGGGGGGGGG
+        cached.push(varObject);
       });
-    });*/
+      varRoom.object = cached;
+      cachedAllRoom.push(varRoom);
+    });
+    savedAllRooms.roomArray = cachedAllRoom;
+
+    savedAllRooms.savedItems.forEach(savedItem => {
+      savedItem.AllRooms = [];
+    });
+
+    
+    savedAllRooms.savedNameMonsters = [];
+    //savedAllRooms.savedNamePnjs = [];
+    //savedAllRooms.savedItems = [];//a delete
+    //savedAllRooms.savedNameItems = [];//a delete
+    //savedAllRooms.roomArray = [];//a delete
+    //console.log(savedAllRooms);
+    return savedAllRooms;
   }
   /** connection user */
   connectUser(msg,socket){
