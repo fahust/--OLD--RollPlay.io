@@ -97,8 +97,8 @@ function save(){
 }
 
 setInterval(() => {
-  //save();
-}, 100000);
+  save();
+}, 30000);
 
 
 io.on('connection', (socket) => {console.log('client connected')

@@ -6,6 +6,7 @@ const Items = require('./items.js');
 const Action = require('./action.js');
 const OneRoom = require('./oneRoom.js');
 const Guild = require('./guild.js');
+require('jsonminify');
 
 
 
@@ -364,7 +365,7 @@ class AllRoom{
         });
         element.object.forEach(client => {
           if(client.type == 1 && client.socket.connected == true){
-            client.socket.emit('allObj', objToSend);//console.log(client.name);
+            client.socket.emit('allObj', JSON.minify(objToSend));//console.log(client.name);
           }
         });
       }
@@ -413,7 +414,7 @@ class AllRoom{
         element.object.forEach(obj =>  {
           if (obj == client){
             if (obj.socket.connected == true)
-              obj.socket.emit('oneObj', objToSend);
+              obj.socket.emit('oneObj', JSON.minify(objToSend));
           }
         });
         return;
@@ -470,7 +471,7 @@ class AllRoom{
               item.AllRooms = [];
               item.owner = [];
             });
-            obj.socket.emit('meObj', varObj);
+            obj.socket.emit('meObj', JSON.minify(varObj));
             return;
           }
         });
