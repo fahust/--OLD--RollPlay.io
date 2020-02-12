@@ -171,27 +171,7 @@ class AllRoom{
       }
     });
     if(exist == 0 )
-      this.creationAccount(msg,socket)
-    /*for (var i = 0, len = this.users; i < len; i++) {
-    //this.users.forEach(user => {
-      if (this.users[i].name == msg.name && this.users[i].socket.connected != true){
-        if (this.users[i].password == msg.password){
-          exist = true;
-          var varObj = Object.assign(new Obj(this),this.users[i]);
-          delete this.users[i];
-          varObj.socket = socket;
-          console.log(varObj.room);
-          //socket.user = user;
-          this.sendAllClientRoom(varObj.room);
-          this.sendAllClientInfoRoom(varObj.room,varObj.name+' is connected');
-          this.users.push(varObj);
-          return varObj;
-        }else{
-          //return 'password is wrong';
-        }
-      }
-    };*/
-    /** register */
+      this.creationAccount(msg,socket);
   }
 
   creationAccount(msg,socket){
@@ -201,7 +181,7 @@ class AllRoom{
     tempUser.addItems(new Items(this,'consomable',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
     tempUser.addItems(new Items(this,'persistant',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),2,tempUser.id));
     tempUser.socket = socket;
-    tempUser.ressource = 100;
+    tempUser.po = 100;
     this.users.push(tempUser);
     this.roomArray[0].object.push(tempUser);
     socket.user = tempUser;
@@ -242,8 +222,8 @@ class AllRoom{
   }
   /** check if name doesn't exist and add in array's name */
   addNamePnj(name){
-    if (!this.savedNamePnjs.includes(name))
-      this.savedNamePnjs.push(name);
+    //if (!this.savedNamePnjs.includes(name))
+      //this.savedNamePnjs.push(name);
   }
   /*generateNamePnj(name){
     if (!this.savedNamePnjs.includes(name))
@@ -253,9 +233,9 @@ class AllRoom{
   createNewRoomDev(nbrItems,type2,type3,type4,type5,type6,danger,name,arrayDoor){
     var varRoom = new OneRoom(danger,name);
     var type = 0;
-    for (let i = 1; i <= 6; i++) {//if(name == 'port'){console.log(name);}
+    for (let i = 1; i <= 6; i++) {
       if (i == 1){type = type2;}else if (i == 2){type = type3;}else if (i == 3){type = type4;}else if (i == 4){type = type5;}else if (i == 6){type = type6;}
-      for (let i2 = 0; i2 < type; i2++) {//if(name == 'port'){console.log(i,type,i2);}
+      for (let i2 = 0; i2 < type; i2++) {
         this.generateStats(i);
         if(i == 2){
           var image = entierAleatoire(1,37);
@@ -265,8 +245,8 @@ class AllRoom{
         var varName;
         if(i == 4){varName = 'build'}else if(i == 5){varName = 'forge'}else if(i == 6){varName = 'alchemy'}else{varName = this.getNammeAtLoad()}
         var obj = new Obj(this,i,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,varName,Date.now(),name,'',entierAleatoire(1,20),image);
-        for (let i = 0; i < nbrItems; i++) 
-          obj.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),obj.id));
+        //for (let i = 0; i < nbrItems; i++) 
+        //  obj.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),obj.id));
         varRoom.object.push(obj);
       }
     }
@@ -301,10 +281,15 @@ class AllRoom{
   }
 
   deleteStatsUselessForSend(varObj){
+    delete varObj.exp;
+    delete varObj.timeConso;
+    delete varObj.dateLastConso;
+    delete varObj.dateLastAttack;
+    delete varObj.guild;
+    delete varObj.goTo;
     delete varObj.id;
     delete varObj.password;
     delete varObj.agressivity;
-
     delete varObj.hp;
     delete varObj.hpmax;
     delete varObj.force;
@@ -316,18 +301,13 @@ class AllRoom{
     delete varObj.charme;
     delete varObj.charmemax;
     delete varObj.reputation;
-            
     delete varObj.level;
-            
     delete varObj.timeaction;
-
     delete varObj.action ;
     delete varObj.nbrItems ;//persistant
     delete varObj.idcrea;
     delete varObj.description;
     delete varObj.cible;
-    
-
     delete varObj.AllRooms;
     delete varObj.socket;
     return varObj;
@@ -348,6 +328,8 @@ class AllRoom{
                   item.AllRooms = [];
                   item.owner = [];
                   varItems.push(item);
+                  item.AllRooms = this;
+                  item.owner = varObj.name;
                 }
               });
               varObj.items = varItems;
@@ -374,7 +356,7 @@ class AllRoom{
               varObj.itemEquip2 = [];
               varObj.itemEquip3 = [];
               varObj.items = [];
-              delete varObj.ressource;
+              delete varObj.po;
             }
             varObj = this.deleteStatsUselessForSend(varObj);
             objToSend.push(varObj);
@@ -392,7 +374,6 @@ class AllRoom{
   sendAllClientInfoRoom(roomName,message){//envoi juste une nouvelle info dans le chat, pour éviter la perte de perf a devoir tout envoyé a chaque fois, rajouter un petit timeout dessus
     this.roomArray.forEach(element => {
       if (element.name == roomName){//check room 
-        
         element.object.forEach(obj =>  {
           if (obj.type == 1){
             if (obj.socket.connected == true)
