@@ -1,6 +1,6 @@
 class Jobs{
   constructor() {
-    this.jobs;
+    this.jobs = [];
     this.possibleJob();
     this.jobNow;
     this.jobLvlNow;
