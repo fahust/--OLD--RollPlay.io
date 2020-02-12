@@ -47,6 +47,7 @@ class Obj{
     }else{
       this.job = [];
     }
+    this.jobNow = '';
 
     this.image = image;
     this.goTo = 0;
@@ -90,56 +91,66 @@ class Obj{
   }
 
   addLevelJob(nameJob){
-    if(this.by.job.jobNow == nameJob){
-      if(this.by.job.jobs[nameJob] === undefined){
-        this.by.job.jobs[nameJob] = 1;
-      }else{
-        this.by.job.jobs[nameJob] += 1;
+      if(this.job.jobNow == nameJob){
+        if(this.job.jobs[nameJob] === undefined){
+          this.job.jobs[nameJob] = 1;
+        }else{
+          this.job.jobs[nameJob] += 1;
+        }
+        this.job.jobLvlNow = this.job.jobs[nameJob]
+        return 1+(this.job.jobLvlNow/10);
       }
-      this.by.job.jobLvlNow = this.by.job.jobs[nameJob]
-      return 1+(this.by.job.jobLvlNow/10);
-    }
     return 1;
   }
 
-  monsterAttack(){//console.log('test');
-    var varRooms = this.AllRooms;
-    if (this.type == 3 && Date.now()-this.dateLastAttack > this.timeaction){//monster attack
-      var cachedCible = [];
-      for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
-        if(this.room == varRooms.roomArray[i]){
-          for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {
-            if(varRooms.roomArray[i].object[i2].type == 1 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
-              cachedCible.push(varRooms.roomArray[i].object[i2]);
-          }
-        }
-      }
-    }else if (this.type == 2 && Date.now()-this.dateLastAttack > this.timeaction){//pnj attack
-      var cachedCible = [];
-      for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
-        if(this.room == varRooms.roomArray[i]){
-          for (var i2 = 0, len2 = varRooms.roomArray.length; i2 < len2; i2++) {
-            if(varRooms.roomArray[i].object[i2].type == 3 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
-              cachedCible.push(varRooms.roomArray[i].object[i2]);
-            if(varRooms.roomArray[i].object[i2].type == 1 && varRooms.roomArray[i].object[i2].reputation <= 10)
-              cachedCible.push(varRooms.roomArray[i].object[i2]);
-          }
-        }
-      }
-    }
-    if ((this.type == 2 || this.type == 3) && Date.now()-this.dateLastAttack > this.timeaction){
-      this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
-      var action = [];
-      this.dateLastAttack = Date.now();
-      action.action = 'attack';
-      action.by = this;
-      action.to = this.cible;
-      action.byItems = [];
-      action.toItems = [];
-      action.room = this.room;//name room
-      var actionEvent = new Action(this.AllRooms,action);
-    }
+  monsterAttack(){//if(this.type == 3)console.log(this.AllRooms)
     
+    if(this.AllRooms){
+      if(this.AllRooms.roomArray){
+        var varRooms = this.AllRooms;
+        if (this.type == 3 && Date.now()-this.dateLastAttack > this.timeaction){//monster attack
+          var cachedCible = [];//console.log(3)
+          for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
+            if(this.room == varRooms.roomArray[i].name){
+              for (var i2 = 0, len2 = varRooms.roomArray[i].object.length; i2 < len2; i2++) {
+                if(varRooms.roomArray[i].object[i2]){
+                  if(varRooms.roomArray[i].object[i2].type == 1 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
+                    cachedCible.push(varRooms.roomArray[i].object[i2]);
+                }
+              }
+            }
+          }
+        }else if (this.type == 2 && Date.now()-this.dateLastAttack > this.timeaction){//pnj attack
+          var cachedCible = [];
+          for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
+            if(this.room == varRooms.roomArray[i].name){
+              for (var i2 = 0, len2 = varRooms.roomArray[i].object.length; i2 < len2; i2++) {
+                if(varRooms.roomArray[i].object[i2]){
+                  if(varRooms.roomArray[i].object[i2].type == 3 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
+                    cachedCible.push(varRooms.roomArray[i].object[i2]);
+                  if(varRooms.roomArray[i].object[i2].type == 1 && varRooms.roomArray[i].object[i2].reputation <= 10)
+                    cachedCible.push(varRooms.roomArray[i].object[i2]);
+                }
+              }
+            }
+          }
+        }
+        if ((this.type == 2 || this.type == 3) && Date.now()-this.dateLastAttack > this.timeaction){
+          this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
+          //console.log(cachedCible);
+          if(this.cible){
+            var action = [];
+            this.dateLastAttack = Date.now();
+            action.action = 'attack';
+            action.to = this.cible.name;
+            action.byItems = [];
+            action.toItems = [];
+            action.room = this.room;//name room
+            var actionEvent = new Action(this.AllRooms,action,this);
+          }
+        }
+      }
+    }
   }
 
   addItems(items){

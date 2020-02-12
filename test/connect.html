@@ -253,7 +253,7 @@
         }
 
         if (type == 7) {//Door
-          action[1] = 'go';
+          action[1] = 'go';console.log(jobClient);
           if(guildClient != '' && jobClient == 'scribe')
             action[2] = 'Revandic';
           if(jobClient == 'Scribe')
@@ -285,6 +285,7 @@
                   cibleName = toItem ;
                   $( ".actionBloc" ).effect("fade",500,function(){
                     $( this ).remove();
+                    console.log(itemsClient)
                   $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                     itemsClient.forEach(item => {
                     colorItem = 'black';
@@ -473,11 +474,12 @@
         }
       });
 
-      function AllObjEffect(msg){
+      function AllObjEffect(msg){//console.log(msg)
         $( ".objBloc" ).remove();
         msg.forEach(element => {
           objInRoom.push(element);
           if (element.name == nameClient){
+            jobClient = element.jobNow;
             if(roomClient != element.room){
               $(".chatContainerDiv").remove();
               $( ".chatContainerDiv" ).effect("fade",500,function(){
@@ -485,7 +487,7 @@
             roomClient = element.room;
             guildClient = element.guild;
             typeClient = element.type;
-            jobClient = element.job.jobNow;
+            //console.log(element);
             document.body.style.background = "#f3f3f3 url('../img/spot/"+roomClient.replace("'", "")+".jpg') no-repeat center";
             document.body.style.backgroundSize = "cover";
             document.body.style.backgroundAttachment = 'fixed';
@@ -530,7 +532,7 @@
           wtf.scrollTop(height);
 
           if(msg.includes('forced you to stay in these place')){
-            clearTimeout(myVar);
+            if (myVar) clearTimeout(myVar);
           }
 
           if(msg.includes('dodge')){

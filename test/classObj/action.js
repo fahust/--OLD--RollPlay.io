@@ -86,6 +86,7 @@ class Action{
         }
       });
     }
+    this.byItems = msgByItems;
   }
 
   getToItem(msgToItems){
@@ -398,7 +399,7 @@ class Action{
         this.to.dateLastConso = Date.now();
         if (this.to.hp < 0){
           this.by.addItems(this.AllRooms.getItemsAleatoire(this.to.level,this.by));
-          if (this.to.type == 1){//console.log('test')
+          if (this.to.type == 1){
             this.to.die();
           }
           if (this.to.type == 2 || this.to.type == 3 ){
@@ -507,11 +508,12 @@ class Action{
     }
   }
 
-  changeJob(jobName){
-    if(this.by.job.jobs[jobName]){
-      this.by.job.jobNow = jobName;
-      this.by.job.jobLvlNow = this.by.job.jobs[jobName];
-    }
+  changeJob(){
+    //if(this.by.job.jobs[this.byItems]){
+      this.by.job.jobNow = this.byItems;
+      this.by.job.jobLvlNow = this.by.job.jobs[this.byItems];
+      this.by.jobNow = this.byItems;
+    //}
   }
 
   forge(){
