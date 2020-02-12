@@ -60,6 +60,7 @@ class AllRoom{
       room.object.forEach(obj => {
         var varObj = Object.assign(new Obj(this),obj);
         varObject.push(varObj);
+        //varObj.AllRooms = this;
       });
       varRoom.object = varObject;
       this.roomArray.push(varRoom);
@@ -71,8 +72,15 @@ class AllRoom{
     });
 
     savedItems.forEach(savedItem => {
-      var item = Object.assign(new Items(this),savedItem);
-      this.savedItems.push(item);
+      var exist = false;
+      savedItems.forEach(savedItemname => {
+        if (savedItemname.name == savedItem.name)
+          exist = true;
+      });
+      if(exist == false){
+        var item = Object.assign(new Items(this),savedItem);
+        this.savedItems.push(item);
+      }
     });
 
     savedNameItems.forEach(savedNameItem => {
@@ -83,7 +91,7 @@ class AllRoom{
   addNammeAtLoad(name){
     this.savedNamePnjs.push(name);
   }
-  getNammeAtLoad(){//console.log(this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)]);
+  getNammeAtLoad(){
     this.lastName = this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)];
     return this.savedNamePnjs[entierAleatoire(0,this.savedNamePnjs.length)];
   }
@@ -92,42 +100,50 @@ class AllRoom{
     
     var savedAllRooms = Object.assign(new AllRoom(),this);
     var cached = [];
-    //console.log(this);
-    savedAllRooms.users.forEach(user => {
-      var varUser = Object.assign(new Obj(),user);
-      varUser.AllRooms = [];//supression des obj pour le send
-      varUser.socket = [];//supression des socket
-      varUser.itemEquip1.AllRooms = [];
-      varUser.itemEquip2.AllRooms = [];
-      varUser.itemEquip3.AllRooms = [];
-      user.items.forEach(item => {
-        var varItem = Object.assign(new Items(),item);
-        varItem.AllRooms = [];
-        varUser.push(varItem);
+    this.roomArray.forEach(room => {
+      room.object.forEach(user => {
+        if(user.type == 1){
+          var varUser = Object.assign(new Obj(),user);
+          if(varUser.itemEquip1) varUser.itemEquip1.AllRooms = [];
+          if(varUser.itemEquip2) varUser.itemEquip2.AllRooms = [];
+          if(varUser.itemEquip3) varUser.itemEquip3.AllRooms = [];
+          //console.log(varUser.items)
+          var cachedItems = [];
+          user.items.forEach(item => {
+            var varItem = Object.assign(new Items(),item);
+            varItem.AllRooms = [];
+            cachedItems.push(varItem);//console.log(varItem)
+          });
+          varUser.items = cachedItems;
+          varUser.AllRooms = [];//supression des obj pour le send
+          varUser.socket = [];//supression des socket
+          cached.push(varUser);
+        }
       });
-      cached.push(varUser);
     });
     savedAllRooms.users = cached;
 
     var cachedAllRoom = [];
-    savedAllRooms.roomArray.forEach(room => {
+    this.roomArray.forEach(room => {
       cached = [];
       var varRoom = Object.assign(new OneRoom(),room);
-      varRoom.object.forEach(object => {
-        var varObject = Object.assign(new Obj(),object);
-        varObject.AllRooms = [];//supression des obj pour le send
-        varObject.socket = [];//supression des socket
-        if(varObject.itemEquip1) varObject.itemEquip1.AllRooms = [];
-        if(varObject.itemEquip2) varObject.itemEquip2.AllRooms = [];
-        if(varObject.itemEquip3) varObject.itemEquip3.AllRooms = [];
-        varObject.items.forEach(item => {
-          var varItem = Object.assign(new Items(),item);
-          varItem.AllRooms = [];
-          varItem.owner = varObject.name;
-          varObject.items.push(varItem);
-        });
-        varObject.items = [];//pour éviter BUGGGGGGGGGG
-        cached.push(varObject);
+      room.object.forEach(object => {
+        if(object.type != 1){
+          var varObject = Object.assign(new Obj(),object);
+          varObject.AllRooms = [];//supression des obj pour le send
+          varObject.socket = [];//supression des socket
+          if(varObject.itemEquip1) varObject.itemEquip1.AllRooms = [];
+          if(varObject.itemEquip2) varObject.itemEquip2.AllRooms = [];
+          if(varObject.itemEquip3) varObject.itemEquip3.AllRooms = [];
+          varObject.items.forEach(item => {
+            var varItem = Object.assign(new Items(),item);
+            varItem.AllRooms = [];
+            varItem.owner = varObject.name;
+            varObject.items.push(varItem);
+          });
+          varObject.items = [];//pour éviter BUGGGGGGGGGG
+          cached.push(varObject);
+        }
       });
       varRoom.object = cached;
       cachedAllRoom.push(varRoom);
@@ -139,12 +155,12 @@ class AllRoom{
     });
 
     
+
     savedAllRooms.savedNameMonsters = [];
     //savedAllRooms.savedNamePnjs = [];
     //savedAllRooms.savedItems = [];//a delete
     //savedAllRooms.savedNameItems = [];//a delete
     //savedAllRooms.roomArray = [];//a delete
-    //console.log(savedAllRooms);
     return savedAllRooms;
   }
   /** connection user */
@@ -195,11 +211,14 @@ class AllRoom{
     this.roomArray.forEach(element => {
       if(element.name == room && entierAleatoire(1,25) == 5){
         if(element.danger > 0){
-          var tempObj = new Obj(this,3,entierAleatoire(10,10*element.danger),entierAleatoire(10,10*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),entierAleatoire(1,1*element.danger),0,entierAleatoire(1,1*element.danger),this.getNammeAtLoad(),Date.now(),room,element.name,entierAleatoire(1,20),entierAleatoire(1,11));
+          this.generateStats();
+          var tempObj = new Obj(this,3,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',3,entierAleatoire(1,11));
+          tempObj.name = this.getNammeAtLoad()
           element.object.push(tempObj);
         }else{
           this.generateStats();
           var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',0,entierAleatoire(1,37));
+          tempObj.name = this.getNammeAtLoad()
           element.object.push(tempObj);
         }
       }
@@ -251,7 +270,7 @@ class AllRoom{
         varRoom.object.push(obj);
       }
     }
-    for (let i3 = 0; i3 < arrayDoor.length; i3++) {//console.log(arrayDoor[i3]);
+    for (let i3 = 0; i3 < arrayDoor.length; i3++) {
       var obj = new Obj(this,7,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,arrayDoor[i3],Date.now(),name,'',0,arrayDoor[i3]);//DOOR
       varRoom.object.push(obj);
     }
@@ -278,10 +297,13 @@ class AllRoom{
         obj.dateLastConso = 0;
       }
     }
+    obj.AllRooms = this;
     obj.monsterAttack();
+    //obj.AllRooms = [];
   }
 
   deleteStatsUselessForSend(varObj){
+    //delete varObj.job;
     delete varObj.exp;
     delete varObj.timeConso;
     delete varObj.dateLastConso;
@@ -329,8 +351,8 @@ class AllRoom{
                   item.AllRooms = [];
                   item.owner = [];
                   varItems.push(item);
-                  item.AllRooms = this;
-                  item.owner = varObj.name;
+                  //item.AllRooms = this;
+                  //item.owner = varObj.name;
                 }
               });
               varObj.items = varItems;
@@ -360,12 +382,13 @@ class AllRoom{
               delete varObj.po;
             }
             varObj = this.deleteStatsUselessForSend(varObj);
+            //varObj.job = varObj.job.jobNow;
             objToSend.push(varObj);
           }
         });
         element.object.forEach(client => {
           if(client.type == 1 && client.socket.connected == true){
-            client.socket.emit('allObj', JSON.minify(objToSend));//console.log(client.name);
+            client.socket.emit('allObj', objToSend);
           }
         });
       }
@@ -414,7 +437,7 @@ class AllRoom{
         element.object.forEach(obj =>  {
           if (obj == client){
             if (obj.socket.connected == true)
-              obj.socket.emit('oneObj', JSON.minify(objToSend));
+              obj.socket.emit('oneObj',objToSend);
           }
         });
         return;
@@ -452,8 +475,10 @@ class AllRoom{
     }
     var tmpNbrItems = entierAleatoire(0,tmpItems.length);
     var item = tmpItems[tmpNbrItems];
-    item.AllRooms = this;
-    return item;
+    if (item){
+      item.AllRooms = this;
+      return item;
+    }
   }
 
   /** send my client to me */
@@ -471,7 +496,7 @@ class AllRoom{
               item.AllRooms = [];
               item.owner = [];
             });
-            obj.socket.emit('meObj', JSON.minify(varObj));
+            obj.socket.emit('meObj',varObj);
             return;
           }
         });
