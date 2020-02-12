@@ -199,7 +199,7 @@ class Action{
           price = item.level;
         }
       });
-      this.by.ressource += price;
+      this.by.po += price;
       this.by.nbrItems -= 1;
       this.AllRooms.sendOneClientInfoRoom(this.room,'You have sell '+this.byItems.name+' to '+this.to.name,this.by);
       //penser a retirer l'objet côter client
@@ -340,7 +340,7 @@ class Action{
           this.by.addLevelJob('Guardian');
           this.by.addLevelJob('Knight');
           this.by.addLevelJob('Master of guardians');
-          this.by.ressource += 1;
+          this.by.po += 1;
           this.by.addExp(this.to.level);
           this.by.addItems(this.AllRooms.getItemsAleatoire(this.to.level,this.by));
           if (this.to.type == 1){
@@ -571,10 +571,13 @@ class Action{
       if(this.byItems.type == 2){
         if(this.by.itemEquip1){
           this.by.itemEquip1 = this.byItems;
+          this.byItems.eq = 1;
         }else if(this.by.itemEquip2){
           this.by.itemEquip2 = this.byItems;
+          this.byItems.eq = 1;
         }else if(this.by.itemEquip3){
           this.by.itemEquip3 = this.byItems;
+          this.byItems.eq = 1;
         }
         this.AllRooms.sendOneClientRoom(this.room,this.by);
       }
@@ -586,12 +589,15 @@ class Action{
       if(this.byItems.type == 2){
         if(this.by.itemEquip1 && this.by.itemEquip1 == this.byItems){
           this.by.itemEquip1 = [];
+          this.byItems.eq = 0;
         }
         if(this.by.itemEquip2 && this.by.itemEquip2 == this.byItems){
           this.by.itemEquip2 = [];
+          this.byItems.eq = 0;
         }
         if(this.by.itemEquip3 && this.by.itemEquip3 == this.byItems){
           this.by.itemEquip3 = [];
+          this.byItems.eq = 0;
         }
         this.AllRooms.sendOneClientRoom(this.room,this.by);
       }

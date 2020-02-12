@@ -19,13 +19,14 @@ class Items{
     this.type = type;//1 = consomable,2 = constant
     this.owner = owner;
     this.level = this.getLevelItems();
+    this.eq = 0; //equiped
     this.savedItems();
     if (this.AllRooms) this.AllRooms.addNameItems(name);
   }
   /** check if ressource is bigger than level items forged */
   static forgeItems(by,items){
-    if (by.ressource >= items.level){
-      by.ressource -= items.level;
+    if (by.po >= items.level){
+      by.po -= items.level;
       by.items.push(items);
     }
   }

@@ -25,8 +25,8 @@ setTimeout(() => {
 fs.readFile('savedAllRooms.json', (err, savedAllRooms) => {
   if (err) throw err;
   savedAllRooms = JSON.parse(savedAllRooms);
-  //console.log(savedAllRooms.roomArray);
   AllRoomLoaded.loadRoomByFile(savedAllRooms.users,savedAllRooms.roomArray,savedAllRooms.guilds,savedAllRooms.savedItems,savedAllRooms.savedNameItems);
+  //console.log(AllRoomLoaded);
 });
 }, 1000);
 
@@ -76,15 +76,6 @@ fs.readFile('name.json', (err, data) => {
 //var prettyJs = nb.beautifyJs(AllRoomLoaded);
 //student = JSON.stringify(AllRoom) 
 
-
-//SAVE only when quit server
-/*
-AllRoomLoaded.prepareToStringify();
-  var data = JSON.stringify(AllRoomLoaded, null, 2);
-  fs.writeFile('student.json', JSON.minify(data), (err) => {
-    if (err) throw err;
-  });
-  */
   
 function save(){
   //Faire une save de la save
@@ -106,7 +97,7 @@ function save(){
 }
 
 setInterval(() => {
-  save();
+  //save();
 }, 100000);
 
 

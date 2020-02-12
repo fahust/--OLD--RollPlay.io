@@ -11,10 +11,10 @@ class Obj{
     //0 = me ,1 = user, 2 = pnj, 3 = enemy, 4 = build, 5 = forge, 6 = alchimie , 7 = door
   constructor(AllRooms,type,hp,hpmax,force,forcemax,dext,dextmax,chance,chancemax,charme,charmemax,reputation,level,name,id,room,password,agressivity,image = 1,exp = 0) {
     this.AllRooms = AllRooms;
-    this.type = type;
-    this.name = name;
+    this.type = type;//type
+    this.name = name;//name
     this.id = id;
-    this.password = password;
+    this.password = password;//password
     this.agressivity = agressivity;
 
     this.hp = hp;
@@ -27,7 +27,7 @@ class Obj{
     this.chancemax = chancemax;
     this.charme = charme;
     this.charmemax = charmemax;
-    this.reputation = reputation;
+    this.reputation = reputation;//reputation
     
     this.level = level;
     this.exp = exp;
@@ -40,7 +40,7 @@ class Obj{
     this.timeConso = 0;
     this.dateLastConso = 0;
     this.dateLastAttack = Date.now();
-    this.ressource;
+    this.po;
     this.guild;
     if(this.type == 1){
       this.job = new Jobs();
@@ -170,7 +170,7 @@ class Obj{
         if(room.name == this.AllRooms.roomArray[i3].name){
           this.AllRooms.roomArray[i3].object.push(this);
           if(this.guild != this.AllRooms.roomArray[i3].owner){
-            this.ressource -= 1;
+            this.po -= 1;
             this.AllRooms.sendOneClientInfoRoom(this.AllRooms.roomArray[i3].name,'You pay tax to '+this.AllRooms.roomArray[i3].owner,this);
           }
         }

@@ -273,7 +273,9 @@
                   $( this ).remove();
                   $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                   itemsClient.forEach(item => {
-                    $(".action").append( '<div class="chatContainer actionBloc" data-type="'+item.type+'" id="'+item.name+'"><span translate="no" id="obj" data-inventory="true" data-type="'+item.type+'" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    colorItem = 'black';
+                    if(item.eq == 1) colorItem = 'green';
+                    $(".action").append( '<div class="chatContainer actionBloc" stlye="color:'+colorItem+';" data-type="'+item.type+'" id="'+item.name+'"><span translate="no" id="obj" data-inventory="true" data-type="'+item.type+'" data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                   });
                   clickAction()
                 });
@@ -285,7 +287,9 @@
                     $( this ).remove();
                   $(".actionBloc").remove();//LES ITEMS S APPEL 5 FOIS TROUVER POURQUOI
                     itemsClient.forEach(item => {
-                      $(".action").append( '<div class="chatContainer actionBloc" id="'+item.name+'"><span translate="no" id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
+                    colorItem = 'black';
+                    if(item.eq == 1) colorItem = 'green';
+                      $(".action").append( '<div class="chatContainer actionBloc" stlye="color:'+colorItem+';" id="'+item.name+'"><span translate="no" id="obj" data-to='+toItem+' data-action='+nameItem+' data-item='+item.name+' data-name="'+item.name+'">'+item.name+'</span><span class="time-right"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></span></div></div>');
                     });
                     clickAction()
                   });
