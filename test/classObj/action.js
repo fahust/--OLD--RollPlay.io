@@ -345,6 +345,7 @@ class Action{
           this.by.addExp(this.to.level);
           this.by.addItems(this.AllRooms.getItemsAleatoire(this.to.level,this.by));
           if (this.to.type == 1){
+            this.to.AllRooms = this.AllRooms;
             this.to.die();
           }
           if (this.to.type == 2 || this.to.type == 3 ){

@@ -19,8 +19,11 @@ La save fais buguer si ont fais autre choses en même temps donc la mêttre en f
 
 
 var AllRoom = require('./classObj/rooms.js'); 
+var Obj = require('./classObj/obj.js'); 
 var AllRoomLoaded = new AllRoom();
 var disconnection = 0;
+var readyServer = 0;
+var socketArray = [];
 
 //READ
 
@@ -30,16 +33,60 @@ setTimeout(() => {
     savedAllRooms = JSON.parse(savedAllRooms);
     AllRoomLoaded.loadRoomByFile(savedAllRooms.users,savedAllRooms.roomArray,savedAllRooms.guilds,savedAllRooms.savedItems,savedAllRooms.savedNameItems);
   //console.log(AllRoomLoaded.roomArray);
+
   });
-}, 2000);
+}, 30);
+
+fs.readFile('name.json', (err, data) => {
+  if (err) throw err;
+  var student = JSON.parse(data);
+  if( AllRoomLoaded.savedNamePnjs.length < 2) {
+    student.forEach(name => {
+      AllRoomLoaded.addNammeAtLoad(name.name);
+    });
+  }
+});
 
 
+
+io.on('connection', (socket) => {console.log('client connected')
+socketArray.push(socket);
+if(disconnection == 0){
+  socket.on('action', (msg) => {
+    AllRoomLoaded.action(JSON.parse(msg),socket.user);
+  });
+
+  socket.on('message', (msg) => {
+    if (socket.user)
+      AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' say '+msg);
+  });
+
+  socket.on('connection', (msg) => {
+    AllRoomLoaded.connectUser(JSON.parse(msg),socket);
+  });
+  try {
+  socket.on('disconnect', () => { // moved here from io.on('connection', socket => {...}) for test purposes
+  if(socket.user){
+    /*var existSaveUser = false;
+    AllRoomLoaded.users.forEach(userSave => {
+      if(userSave.name == socket.user.name)
+        existSaveUser = true
+    });
+    if(existSaveUser == false)*/
+      AllRoomLoaded.users.push(socket.user)
+  }
+});
+  } catch (error) {
+    
+  }
+}
+});
 /*
 fs.readFile('name.json', (err, data) => {
   if (err) throw err;
   var student = JSON.parse(data);
   student.forEach(name => {
-    AllRoomLoaded.addNammeAtLoad(name.name);
+    //AllRoomLoaded.addNammeAtLoad(name.name);
   });
   var arrayDoor = [];
   arrayDoor.push('tavern');
@@ -87,23 +134,58 @@ function saveAndQuit(){
     //fs.writeFile('savedLastAllRooms.json', savedLastAllRooms, (err) => {
     //  if (err) throw err;
   disconnection = 1;
-  var savedAllRooms = AllRoomLoaded.prepareToStringify();
-  try {
+  //var savedAllRooms = AllRoomLoaded.prepareToStringify();
+  try {console.log(AllRoomLoaded.users.length);
+    //AllRoomLoaded.users = [];
     AllRoomLoaded.roomArray.forEach(room => {
       room.object.forEach(obj => {
         obj.AllRooms = [];
+        obj.socket = [];
+        obj.cible = [];
         obj.items.forEach(item => {
-          item.AllRooms = [];
-        });//console.log(typeof obj.AllRooms );
+          if(item)
+            item.AllRooms = [];
+        });//console.log(obj );
+        if(obj.type == 1){
+          obj = [];
+          AllRoomLoaded.users.forEach(user => {
+            var exisUser2 = false;
+            AllRoomLoaded.users.forEach(user2 => {
+              if(user.name == user2.name)
+                exisUser2 = true;
+            });
+            if(obj.name == user.name && exisUser2 == false)
+              AllRoomLoaded.users.push(user)
+          });
+        }
       });
     });
-    var savedAllRoomsStringified = JSON.stringify(savedAllRooms, null, 2);
+
+    AllRoomLoaded.users.forEach(user => {
+          user.AllRooms = [];
+          user.socket = [];
+          user.cible = [];
+          user.items.forEach(item => {
+            if(item)
+              item.AllRooms = [];
+          });//console.log(obj );
+    });
+    
+
+      AllRoomLoaded.savedItems.forEach(savedItem => {
+        if(savedItem)
+          savedItem.AllRooms = [];
+      });
+
+      AllRoomLoaded.savedNameMonsters = [];
+
+    var savedAllRoomsStringified = JSON.stringify(AllRoomLoaded, null, 2);
     fs.writeFile('savedAllRooms.json', JSON.minify(savedAllRoomsStringified), (err) => {
       if (err) throw err;
       console.log('Saved !');
       setTimeout(() => {
         process.exit();
-      }, 300);
+      }, 500);
     });
   } catch (error) {
     console.log(error);
@@ -114,25 +196,12 @@ function saveAndQuit(){
 
 
 
-if(disconnection == 0){
-  io.on('connection', (socket) => {console.log('client connected')
-    
-    socket.on('action', (msg) => {
-      AllRoomLoaded.action(JSON.parse(msg),socket.user);
-    });
-
-    socket.on('message', (msg) => {
-      if (socket.user)
-        AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' say '+msg);
-    });
-
-    socket.on('connection', (msg) => {
-      AllRoomLoaded.connectUser(JSON.parse(msg),socket);
-    });
-    
-  });
-}
-
+  
 setTimeout(() => {
-  saveAndQuit();
-}, 50000);
+  socketArray.forEach(socketDisconnect => {
+  if(socketDisconnect.connected == true)
+  socketDisconnect.disconnect();
+});
+saveAndQuit();
+}, 22000);
+
