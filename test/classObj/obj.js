@@ -41,7 +41,8 @@ class Obj{
     this.dateLastConso = 0;
     this.dateLastAttack = Date.now();
     this.po;
-    this.guild;
+    this.guild = '';
+    this.guildInvit = '';
     if(this.type == 1){
       this.job = new Jobs();
     }else{
