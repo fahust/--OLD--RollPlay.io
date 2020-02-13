@@ -1,7 +1,8 @@
 class Guild{
-    constructor(name) {
-      this.name = name;
-    }
+  constructor(name,master) {
+    this.name = name;
+    this.master = master;//name
+  }
 
 }
 

@@ -467,40 +467,94 @@ class Action{
     if(this.to && this.by){
       this.AllRooms.roomArray.forEach(room => {
         if(room.name == this.to.name){
-          room.owner = this.byItems;
+          if(this.by.guild.name){
+            room.owner = this.by.guild.name;
+            this.AllRooms.sendAllClientInfoRoom(this.room,'Place now belongs to"'+this.by.guild.name+'"');
+          }
         }
       });
-      this.AllRooms.sendAllClientInfoRoom(this.room,'Place now belongs to"'+this.to.byItems+'"');
       //this.AllRooms.sendOneClientInfoRoom(this.room,this.to.description,this.by);
     }
   }
 
-  createGuild(guildName){
+  createGuild(){
     var exist = false;
     this.AllRooms.guilds.forEach(guild => {
-      if(guild.name == guildName)
+      if(guild.name == this.byItems)
         exist = true;
     });
     if(exist == false){
-      var guild = new Guild(guildName);
-      this.AllRooms.guilds.push(guild);
-      this.AllRooms.sendOneClientInfoRoom(this.room,'You have created guild "'+guildName+'"',this.by);
+      if(this.by.guild == ''){
+        var guild = new Guild(this.byItems,this.by.name);
+        this.by.guild = this.byItems;
+        this.AllRooms.guilds.push(guild);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You have created guild "'+this.byItems+'"',this.by);
+      }else{
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You is already in guild "'+this.by.guild+'"',this.by);}
     }else{
-      this.AllRooms.sendOneClientInfoRoom(this.room,'Name guild already exist : "'+guildName+'"',this.by);
+      this.AllRooms.sendOneClientInfoRoom(this.room,'Name guild already exist : "'+this.byItems+'"',this.by);
     }
   }
 
-  joinGuild(guildName){
-    if(this.by.guild == ''){
-      this.by.guild = guildName;
+  giveMasterGuild(){
+    if(this.to.guild == this.by.guild && this.by.guild != ''){
+      this.AllRooms.guilds.forEach(guild => {
+        if(guild.master == this.by.name){
+          guild.master = this.to.name;
+          this.AllRooms.sendOneClientInfoRoom(this.room,'The guild "'+this.by.guild+'" belongs to you ',this.to);
+          this.AllRooms.sendOneClientInfoRoom(this.room,'You give guild "'+this.by.guild+'" to '+this.to.name,this.by);
+        }
+      });
+
+    }
+  }
+
+  joinGuild(){
+    if(this.by.guild == '' && this.by.guildInvit != ''){
+      this.by.guild = this.by.guildInvit;
+      this.by.guildInvit = '';
       this.AllRooms.sendOneClientInfoRoom(this.room,'You have join guild "'+this.by.guild+'"',this.by);
     }else{
-      this.AllRooms.sendOneClientInfoRoom(this.room,'You have already in guild "'+this.by.guild+'"',this.by);
+      this.AllRooms.sendOneClientInfoRoom(this.room,'You is already in guild "'+this.by.guild+'"',this.by);
+    }
+  }
+
+  invitGuild(){
+    if(this.to.guild == '' && this.by.guild != ''){
+      var permission = false;
+      this.AllRooms.guilds.forEach(guild => {
+        if(guild.master == this.by.name){
+          permission = true;
+          this.to.guildInvit = this.by.guild;
+          this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name+' have invited you at join guild "'+this.by.guild+'"',this.to);
+          this.AllRooms.sendOneClientInfoRoom(this.room,'You have invited'+this.to.name+' at join guild "'+this.by.guild+'"',this.by);
+        }
+      });
+      if(permission == false)
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You haven\'t permission to invit in your guild',this.by);
+    }else{
+      this.AllRooms.sendOneClientInfoRoom(this.room,this.to.name +' is already in guild "'+this.by.guild+'"',this.by);
     }
   }
 
   quitGuild(){
     if(this.by.guild != ''){
+      var guildToQuit = false;
+      this.AllRooms.guilds.forEach(guild => {
+        if(guild.master == this.by.name){
+          guildToQuit = guild;
+        }
+      });
+      if(guildToQuit != false){
+        this.AllRooms.roomArray.forEach(room => {
+          room.object.forEach(obj => {
+            if(obj.type == 1 && obj.guild == guildToQuit.name){
+              obj.guild = '';
+              this.AllRooms.sendOneClientInfoRoom(this.room,'Your guild "'+obj.guild+'" has been dissolved by master',obj);
+            }
+          });
+        });
+      }
       this.AllRooms.sendOneClientInfoRoom(this.room,'You have quit guild "'+this.by.guild+'"',this.by);
       this.by.guild = '';
     }else{
@@ -510,9 +564,9 @@ class Action{
 
   changeJob(){
     //if(this.by.job.jobs[this.byItems]){
-      this.by.job.jobNow = this.byItems;
-      this.by.job.jobLvlNow = this.by.job.jobs[this.byItems];
-      this.by.jobNow = this.byItems;
+    this.by.job.jobNow = this.byItems;
+    this.by.job.jobLvlNow = this.by.job.jobs[this.byItems];
+    this.by.jobNow = this.byItems;
     //}
   }
 
