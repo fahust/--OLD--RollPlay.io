@@ -241,7 +241,7 @@ class AllRoom{
           image = entierAleatoire(1,11);
         }
         var varName;
-        if(i == 4){varName = 'build'}else if(i == 5){varName = 'forge'}else if(i == 6){varName = 'alchemy'}else{varName = this.getNammeAtLoad()}
+        if(i == 4){varName = 'build';}else if(i == 5){varName = 'forge';}else if(i == 6){varName = 'alchemy';}else{varName = this.getNammeAtLoad();}
         obj = new Obj(this,i,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,varName,Date.now(),name,'',entierAleatoire(1,20),image);
         //for (let i = 0; i < nbrItems; i++) 
         //  obj.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),entierAleatoire(1,2),obj.id));
@@ -286,7 +286,7 @@ class AllRoom{
     delete varObj.timeConso;
     delete varObj.dateLastConso;
     delete varObj.dateLastAttack;
-    delete varObj.guild;
+    //delete varObj.guild;
     delete varObj.goTo;
     delete varObj.id;
     delete varObj.password;
@@ -308,7 +308,7 @@ class AllRoom{
     delete varObj.nbrItems ;//persistant
     delete varObj.idcrea;
     delete varObj.description;
-    delete varObj.cible;
+    varObj.cible = [];
     delete varObj.AllRooms;
     delete varObj.socket;
     return varObj;
@@ -417,7 +417,7 @@ class AllRoom{
           }
         });
         element.object.forEach(obj =>  {
-          if (obj == client){
+          if (obj.name == client.name){
             if (obj.socket.connected == true)
               obj.socket.emit('oneObj',objToSend);
           }

@@ -571,17 +571,6 @@ class Action{
     //}
   }
 
-  forge(){
-    if(this.by){
-      if (!this.AllRooms.savedNameItems.includes(this.itemName)){
-        var bonus = this.by.addLevelJob('Blacksmith');
-        new Items(this.AllRooms,this.itemName,this.itemHp*bonus,this.itemForce*bonus,this.itemDext*bonus,this.itemChance*bonus,this.itemCharme+bonus,this.itemTime*bonus,this.itemType,this.by);
-        this.AllRooms.sendOneClientInfoRoom(this.room,'You have created '+this.itemName,this.by);
-        this.AllRooms.sendOneClientRoom(this.room,this.by);
-      }
-    }
-  }
-
   talk(){
     if(this.to && this.by){
       if(this.to.type == 2){
@@ -601,6 +590,17 @@ class Action{
       this.AllRooms.sendOneClientRoom(this.room,this.by);
     }
   }*/
+  
+  forge(){
+    if(this.by){
+      if (!this.AllRooms.savedNameItems.includes(this.itemName)){
+        var bonus = this.by.addLevelJob('Blacksmith');
+        new Items(this.AllRooms,this.itemName,this.itemHp*bonus,this.itemForce*bonus,this.itemDext*bonus,this.itemChance*bonus,this.itemCharme+bonus,this.itemTime*bonus,this.itemType,this.by);
+        this.AllRooms.sendOneClientInfoRoom(this.room,'You have created '+this.itemName,this.by);
+        this.AllRooms.sendOneClientRoom(this.room,this.by);
+      }
+    }
+  }
 
   useItems(){
     if(this.to && this.by){
