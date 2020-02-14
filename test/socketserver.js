@@ -50,36 +50,62 @@ fs.readFile('name.json', (err, data) => {
 
 
 io.on('connection', (socket) => {console.log('client connected')
-socketArray.push(socket);
-if(disconnection == 0){
-  socket.on('action', (msg) => {
-    AllRoomLoaded.action(JSON.parse(msg),socket.user);
-  });
-
-  socket.on('message', (msg) => {
-    if (socket.user)
-      AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' say '+msg);
-  });
-
-  socket.on('connection', (msg) => {
-    AllRoomLoaded.connectUser(JSON.parse(msg),socket);
-  });
-  try {
-  socket.on('disconnect', () => { // moved here from io.on('connection', socket => {...}) for test purposes
-  if(socket.user){
-    /*var existSaveUser = false;
-    AllRoomLoaded.users.forEach(userSave => {
-      if(userSave.name == socket.user.name)
-        existSaveUser = true
+  socketArray.push(socket);
+  if(disconnection == 0){
+    socket.on('action', (msg) => {
+      AllRoomLoaded.action(JSON.parse(msg),socket.user);
     });
-    if(existSaveUser == false)*/
-      AllRoomLoaded.users.push(socket.user)
-  }
-});
-  } catch (error) {
+
+    socket.on('message', (msg) => {
+      if (socket.user)
+        AllRoomLoaded.sendAllClientInfoRoom(socket.user.room,socket.user.name+' say '+msg);
+    });
+
+    socket.on('connection', (msg) => {
+      AllRoomLoaded.connectUser(JSON.parse(msg),socket);
+    });
+    try {
+      socket.on('disconnect', () => { // moved here from io.on('connection', socket => {...}) for test purposes
+        if(socket.user){
+          //AllRoomLoaded.users.push(socket.user);
+          var userDisconnect = socket.user;
+          fs.readFile('users.json', (err, users) => {
+            if (err) throw err;
+            var usersSave = JSON.parse(users);
+
+            userDisconnect.AllRooms = [];
+            userDisconnect.socket = [];
+            userDisconnect.cible = [];
+            userDisconnect.items.forEach(item => {
+              if(item)
+                item.AllRooms = [];
+            });
+
+            var existInAllRoom = false;
+            usersSave.forEach(userSave => {
+              if(userDisconnect.name == userSave.name){
+                existInAllRoom = true;
+                userSave = userDisconnect;
+              }
+            });
+            if(existInAllRoom == false){
+              usersSave.push(userDisconnect);
+            }
+            //console.log(userDisconnect);
+            var usersStringified = JSON.stringify(usersSave, null, 2);
+            fs.writeFile('users.json', JSON.minify(usersStringified), (err) => {
+              if (err) throw err;
+              console.log('Saved Users!');
+            });
+          });
+
+          
+        }
+      });
+    } catch (error) {
     
+    }
   }
-}
 });
 /*
 fs.readFile('name.json', (err, data) => {
@@ -126,7 +152,10 @@ fs.readFile('name.json', (err, data) => {
 //var prettyJs = nb.beautifyJs(AllRoomLoaded);
 //student = JSON.stringify(AllRoom) 
 
-  
+function saveUser(){
+  saveAndQuit();
+  //END USERS
+}
 function saveAndQuit(){
   //Faire une save de la save
   //fs.readFile('savedAllRooms.json', (err, savedLastAllRooms) => {
@@ -134,9 +163,7 @@ function saveAndQuit(){
     //fs.writeFile('savedLastAllRooms.json', savedLastAllRooms, (err) => {
     //  if (err) throw err;
   disconnection = 1;
-  //var savedAllRooms = AllRoomLoaded.prepareToStringify();
-  try {console.log(AllRoomLoaded.users.length);
-    //AllRoomLoaded.users = [];
+  try {
     AllRoomLoaded.roomArray.forEach(room => {
       room.object.forEach(obj => {
         obj.AllRooms = [];
@@ -145,47 +172,26 @@ function saveAndQuit(){
         obj.items.forEach(item => {
           if(item)
             item.AllRooms = [];
-        });//console.log(obj );
+        });
         if(obj.type == 1){
           obj = [];
-          AllRoomLoaded.users.forEach(user => {
-            var exisUser2 = false;
-            AllRoomLoaded.users.forEach(user2 => {
-              if(user.name == user2.name)
-                exisUser2 = true;
-            });
-            if(obj.name == user.name && exisUser2 == false)
-              AllRoomLoaded.users.push(user)
-          });
         }
       });
     });
 
-    AllRoomLoaded.users.forEach(user => {
-          user.AllRooms = [];
-          user.socket = [];
-          user.cible = [];
-          user.items.forEach(item => {
-            if(item)
-              item.AllRooms = [];
-          });//console.log(obj );
+    AllRoomLoaded.savedItems.forEach(savedItem => {
+      if(savedItem)
+        savedItem.AllRooms = [];
     });
-    
 
-      AllRoomLoaded.savedItems.forEach(savedItem => {
-        if(savedItem)
-          savedItem.AllRooms = [];
-      });
-
-      AllRoomLoaded.savedNameMonsters = [];
+    AllRoomLoaded.savedNameMonsters = [];
+    AllRoomLoaded.users = [];
 
     var savedAllRoomsStringified = JSON.stringify(AllRoomLoaded, null, 2);
     fs.writeFile('savedAllRooms.json', JSON.minify(savedAllRoomsStringified), (err) => {
       if (err) throw err;
       console.log('Saved !');
-      setTimeout(() => {
-        process.exit();
-      }, 500);
+      process.exit();
     });
   } catch (error) {
     console.log(error);
@@ -195,13 +201,14 @@ function saveAndQuit(){
 }
 
 
-
-  
 setTimeout(() => {
   socketArray.forEach(socketDisconnect => {
-  if(socketDisconnect.connected == true)
-  socketDisconnect.disconnect();
-});
-saveAndQuit();
+    if(socketDisconnect.connected == true)
+      socketDisconnect.disconnect();
+  });
 }, 22000);
+
+setTimeout(() => {
+  saveUser();
+}, 25000);
 
