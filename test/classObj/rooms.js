@@ -1,6 +1,4 @@
 
-'use strict';
-
 const Obj = require('./obj.js');
 const Items = require('./items.js');
 const Action = require('./action.js');
@@ -45,11 +43,20 @@ class AllRoom{
         varItems.push(varitem);
       });
       varobj.items = varItems;
+      varobj.AllRooms = this;
       this.roomArray.forEach(room => {
         if(room.name == varobj.room)
           room.object.push(varobj);
       });
-      this.users.push(varobj);
+      
+      var existUser = false;
+        this.users.forEach(user2 => {
+          if(user2.name == varobj.name)
+            existUser = true;
+        });
+        if(existUser == false)
+          this.users.push(varobj);
+
     });
 
 
@@ -58,9 +65,16 @@ class AllRoom{
       var varRoom = Object.assign(new OneRoom(),room);
       var varObject = [];
       room.object.forEach(obj => {
-        var varObj = Object.assign(new Obj(this),obj);
-        varObject.push(varObj);
-        //varObj.AllRooms = this;
+        if(obj){
+          if(obj.type == 1){
+            //console.log(varRoom)
+            obj = [];
+          }else{
+            var varObj = Object.assign(new Obj(this),obj);
+            varObject.push(varObj);
+            //varObj.AllRooms = this;
+          }
+        }
       });
       varRoom.object = varObject;
       this.roomArray.push(varRoom);
@@ -98,7 +112,7 @@ class AllRoom{
   /** prepare for save all server in json in file */
   prepareToStringify(){//users,rooms,guilds,savedItems,savedNameItems
     
-    var savedAllRooms = Object.assign(new AllRoom(),this);
+    /*var savedAllRooms = Object.assign(new AllRoom(),this);
     var cached = [];
     this.roomArray.forEach(room => {
       room.object.forEach(user => {
@@ -161,7 +175,8 @@ class AllRoom{
     //savedAllRooms.savedItems = [];//a delete
     //savedAllRooms.savedNameItems = [];//a delete
     //savedAllRooms.roomArray = [];//a delete
-    return savedAllRooms;
+    return savedAllRooms;*/
+    return this;
   }
   /** connection user */
   connectUser(msg,socket){
@@ -171,16 +186,31 @@ class AllRoom{
       if (user.name == msg.name && user.socket.connected != true){
         if (user.password == msg.password){
           exist = 1;
-          var varObj = Object.assign(new Obj(this),user);
-          delete varObj.socket;
-          varObj.socket = socket;
-          varObj.AllRooms = this;
-          socket.user = varObj;
-          this.roomArray.forEach(room => {
-            if(room.name == varObj.room){
-              room.object.push(varObj);
+          var existInRoom = false;
+          /*this.roomArray.forEach(room => {
+            room.object.forEach(objexist => {
+              if(objexist.name == user.name && objexist.type == 1){
+                objexist.socket = socket;
+                socket.user = objexist;
+                existInRoom = true;
+                varObj = objexist;
+              }
+            });
+          });*/
+
+            if(existInRoom == false){
+              var varObj = Object.assign(new Obj(this),user);
+              delete varObj.socket;
+              varObj.socket = socket;
+              varObj.AllRooms = this;
+              socket.user = varObj;
+              this.roomArray.forEach(room => {
+                if(room.name == varObj.room){
+                    room.object.push(varObj);
+                  console.log('user found')
+                }
+              });
             }
-          });
           this.sendAllClientRoom(varObj.room);
           this.sendAllClientInfoRoom(varObj.room,varObj.name+' is connected');
           return 1;
@@ -197,6 +227,7 @@ class AllRoom{
     tempUser.addItems(new Items(this,this.getNammeAtLoad(),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
     tempUser.addItems(new Items(this,'consomable',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),1,tempUser.id));
     tempUser.addItems(new Items(this,'persistant',entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(-3,5),entierAleatoire(1000,5000),2,tempUser.id));
+    tempUser.AllRooms = this;
     tempUser.socket = socket;
     tempUser.po = 100;
     this.users.push(tempUser);
@@ -209,17 +240,19 @@ class AllRoom{
   }
   createMonsterOrPnj(room){
     this.roomArray.forEach(element => {
-      if(element.name == room && entierAleatoire(1,25) == 5){
-        if(element.danger > 0){
-          this.generateStats();
-          var tempObj = new Obj(this,3,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',3,entierAleatoire(1,11));
-          tempObj.name = this.getNammeAtLoad()
-          element.object.push(tempObj);
-        }else{
-          this.generateStats();
-          var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',0,entierAleatoire(1,37));
-          tempObj.name = this.getNammeAtLoad()
-          element.object.push(tempObj);
+      if(element.object.length > 10){
+        if(element.name == room && entierAleatoire(1,25) == 5){
+          if(element.danger > 0){
+            this.generateStats();
+            var tempObj = new Obj(this,3,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',3,entierAleatoire(1,11));
+            tempObj.name = this.getNammeAtLoad()
+            element.object.push(tempObj);
+          }else{
+            this.generateStats();
+            var tempObj = new Obj(this,2,10,10,this.force,this.force,this.dext,this.dext,this.chance,this.chance,this.charme,this.charme,this.reputation,this.level,this.getNammeAtLoad(),Date.now(),room,'',0,entierAleatoire(1,37));
+            tempObj.name = this.getNammeAtLoad()
+            element.object.push(tempObj);
+          }
         }
       }
     });
@@ -337,6 +370,7 @@ class AllRoom{
   }
   /** send all client at all client of room where is client's action launch */
   sendAllClientRoom(roomName){// envoyer les info d'une room a tout les clients de cet room
+  
     this.roomArray.forEach(element => {
       if (element.name == roomName){
         var objToSend = [];
@@ -347,7 +381,7 @@ class AllRoom{
             if (obj.type == 1 || obj.type == 0){
               var varItems = [];
               varObj.items.forEach(item => {
-                if(!Array.isArray(item)){
+                if(!Array.isArray(item) && item){
                   item.AllRooms = [];
                   item.owner = [];
                   varItems.push(item);
@@ -388,6 +422,9 @@ class AllRoom{
         });
         element.object.forEach(client => {
           if(client.type == 1 && client.socket.connected == true){
+          for (var i = 0, len = this.users.length; i < len; i++) {
+            this.users[i] = client;
+          };
             client.socket.emit('allObj', objToSend);
           }
         });

@@ -23,10 +23,15 @@ function runScript(scriptPath, callback) {
     var err = code === 0 ? null : new Error('exit code ' + code);
     callback(err);
     console.log('finish');
+    try {
+      
     runScript('./test/socketserver.js', function (err) {
-        if (err) throw err;
-        console.log('finished running some-script.js');
-      });
+      if (err) throw err;
+      console.log('finished running some-script.js');
+    });
+    } catch (error) {
+      console.log(error);
+    }
   });
 
 }
