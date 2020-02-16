@@ -131,9 +131,9 @@ class Action{
       this.goAction();
     if (this.action == 'go')
       this.prepareGoAction();
-    if (this.action == 'Use item')
+    if (this.action == 'Use Item')
       this.useItems();
-    if (this.action == 'Equip item')
+    if (this.action == 'Equip Item')
       this.equipItems();
     if (this.action == 'Talk')
       this.talk();

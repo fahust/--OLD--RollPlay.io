@@ -138,7 +138,7 @@ class Obj{
                     dontAttack = true;
                   if(varRooms.roomArray[i].object[i2].type == 3 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
                     cachedCible.push(varRooms.roomArray[i].object[i2]);
-                  if(varRooms.roomArray[i].object[i2].type == 1 && varRooms.roomArray[i].object[i2].reputation <= 10)
+                  if(varRooms.roomArray[i].object[i2].type == 1 && varRooms.roomArray[i].object[i2].reputation <= -10)
                     cachedCible.push(varRooms.roomArray[i].object[i2]);
                 }
               }
