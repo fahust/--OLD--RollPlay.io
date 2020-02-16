@@ -31,6 +31,10 @@ class Obj{
     
     this.level = level;
     this.exp = exp;
+    this.connectLatence = 0;
+    setTimeout(() => {
+      this.connectLatence = 1;
+    }, 2000);
     
     this.timeaction = 3000;
 
@@ -62,7 +66,7 @@ class Obj{
     this.itemEquip1;
     this.itemEquip2;
     this.itemEquip3;
-    this.monsterAttack();
+    //this.monsterAttack();
   }
 
   addExp(exp){
@@ -107,6 +111,7 @@ class Obj{
   monsterAttack(){//if(this.type == 3)console.log(this.AllRooms)
     
     if(this.AllRooms){
+      var dontAttack = false;
       if(this.AllRooms.roomArray){
         var varRooms = this.AllRooms;
         if (this.type == 3 && Date.now()-this.dateLastAttack > this.timeaction){//monster attack
@@ -114,6 +119,8 @@ class Obj{
           for (var i = 0, len = varRooms.roomArray.length; i < len; i++) {
             if(this.room == varRooms.roomArray[i].name){
               for (var i2 = 0, len2 = varRooms.roomArray[i].object.length; i2 < len2; i2++) {
+                if(varRooms.roomArray[i].object[i2].connectLatence == 0)
+                  dontAttack = true;
                 if(varRooms.roomArray[i].object[i2]){
                   if(varRooms.roomArray[i].object[i2].type == 1 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
                     cachedCible.push(varRooms.roomArray[i].object[i2]);
@@ -127,6 +134,8 @@ class Obj{
             if(this.room == varRooms.roomArray[i].name){
               for (var i2 = 0, len2 = varRooms.roomArray[i].object.length; i2 < len2; i2++) {
                 if(varRooms.roomArray[i].object[i2]){
+                  if(varRooms.roomArray[i].object[i2].connectLatence == 0)
+                    dontAttack = true;
                   if(varRooms.roomArray[i].object[i2].type == 3 /*&& this.cible != varRooms.roomArray[i].object[i2]*/)
                     cachedCible.push(varRooms.roomArray[i].object[i2]);
                   if(varRooms.roomArray[i].object[i2].type == 1 && varRooms.roomArray[i].object[i2].reputation <= 10)
@@ -136,7 +145,7 @@ class Obj{
             }
           }
         }
-        if ((this.type == 2 || this.type == 3) && Date.now()-this.dateLastAttack > this.timeaction){
+        if ((this.type == 2 || this.type == 3) && Date.now()-this.dateLastAttack > this.timeaction && dontAttack == false){
           this.cible = cachedCible[entierAleatoire(0,cachedCible.length)];
           //console.log(cachedCible);
           if(this.cible){

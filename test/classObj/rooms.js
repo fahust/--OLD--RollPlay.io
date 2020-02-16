@@ -123,19 +123,51 @@ class AllRoom{
     fs.readFile('users.json', (err, users) => {
       if (err) throw err;
       usersSave = JSON.parse(users);
-
-      usersSave.forEach(userSave => {
-        var existInAllRoom = false;
-        this.users.forEach(user => {
-          if(user.name == userSave.name)
-            existInAllRoom = true;
-        });
-        if(existInAllRoom == false)
-          this.users.push(userSave);
+      //this.users = [];
+      usersSave.forEach(user => {
+        if(user != null){
+          var existInAllRoom = false;
+          this.users.forEach(userLocal => {
+            if(userLocal.name == user.name)
+              existInAllRoom = true;
+          });
+          if(existInAllRoom == false && msg.name == user.name)
+            this.users.push(user);
+            
+          if (user.name == msg.name /*&& user.socket.connected != true*/){
+            if (user.password == msg.password){
+              exist = 1;
+                var varObj = Object.assign(new Obj(this),user);
+                delete varObj.socket;
+                varObj.socket = socket;
+                varObj.AllRooms = this;
+                socket.user = varObj;
+                this.roomArray.forEach(room => {
+                  if(room.name == varObj.room){
+                    var existInRoom = false;
+                    room.object.forEach(objRoom => {
+                      if(objRoom.name == varObj.name){
+                      delete objRoom.socket;
+                      objRoom.socket = socket;
+                      objRoom.AllRooms = this;
+                      existInRoom = true;
+                      }
+                    });
+                    if(existInRoom == false)
+                      room.object.push(varObj);
+                    console.log('user found');
+                  }
+                });
+              this.sendAllClientRoom(varObj.room);
+              this.sendAllClientInfoRoom(varObj.room,varObj.name+' is connected');
+              return 1;
+            }
+          }
+        }
       });
-      //console.log(this.users);
-      this.users.forEach(user => {
-        if (user.name == msg.name /*&& user.socket.connected != true*/){
+      console.log(this.users.length);
+      /*this.users.forEach(user => {
+        if (user.name == msg.name ){
           if (user.password == msg.password){
             exist = 1;
             var existInRoom = false;
@@ -157,7 +189,7 @@ class AllRoom{
             return 1;
           }
         }
-      });
+      });*/
       if(exist == 0 )
         this.creationAccount(msg,socket);
     });

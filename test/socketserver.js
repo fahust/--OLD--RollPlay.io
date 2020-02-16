@@ -82,16 +82,32 @@ io.on('connection', (socket) => {console.log('client connected')
             });
 
             var existInAllRoom = false;
-            usersSave.forEach(userSave => {
-              if(userDisconnect.name == userSave.name){
-                existInAllRoom = true;
-                userSave = userDisconnect;
+            //usersSave.forEach(userSave => {
+            for (var i = 0; i < usersSave.length; i++) {
+              if(usersSave[i] != null){
+                if(userDisconnect.name == usersSave[i].name){
+                  existInAllRoom = true;
+                  usersSave[i] = userDisconnect;
+                  //delete usersSave[i];
+                  usersSave[i] = userDisconnect; 
+                  //console.log(userDisconnect);
+                }
               }
-            });
-            if(existInAllRoom == false){
-              usersSave.push(userDisconnect);
             }
-            //console.log(userDisconnect);
+            //});
+            if(existInAllRoom == false)
+              usersSave.push(userDisconnect);
+
+            AllRoomLoaded.roomArray.forEach(room => {
+              room.object.forEach(obj => {
+                if(obj.name == userDisconnect.name){
+                  delete obj;
+                }
+              });
+            });
+
+
+            //console.log(usersSave);
             var usersStringified = JSON.stringify(usersSave, null, 2);
             fs.writeFile('users.json', JSON.minify(usersStringified), (err) => {
               if (err) throw err;
@@ -200,15 +216,15 @@ function saveAndQuit(){
   //});
 }
 
-
+var timeOneDay = 1000 * 60 * 60 * 24 * 3;
 setTimeout(() => {
   socketArray.forEach(socketDisconnect => {
     if(socketDisconnect.connected == true)
       socketDisconnect.disconnect();
   });
-}, 22000);
+}, timeOneDay-2000);
 
 setTimeout(() => {
   saveUser();
-}, 25000);
+}, timeOneDay);
 
